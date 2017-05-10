@@ -1,1 +1,1 @@
-# CursesCmdResize
+# Curses-Cmd Resize Utility Program
