@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+function shs() {
+  shb
+  sha
+  def
+}
+function shb() {
+  . ~/.bashrc
+function sha() {
+  . ~/.bash_aliases
+}
+function def() {
+  if [[ - ~/.scripts ]]; then
+    for file in ~/.scripts/*; do
+      . "$file"
+    done
+  fi
+}

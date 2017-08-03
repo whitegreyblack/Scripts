@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+function movies() {
+  # ---                                                   --- #
+  # TODO: allow parameter -1 to return space delimited movies #
+  #       prepended by a vc or jt to indicated local listings #
+  # TODO: allow parameter -h to return movies listings in col #
+  # TODO: allow parameter -v to return movies listings in row #
+  # ---                                                   --- #
+  if [[ "$#" == "1" ]]; then
+    case $1 in
+      -h|--row|--horizontal)
+        vc=$(curl --silent http://bison6cinema.com/valley-city/ | grep -o '<h4 class=\"heading14\">.*</h4>' | sed 's/\(<[^\>]*>\|<\/[^\>]*>\)//g')
+        shift
+        ;;
+      -v|--col|--vertical)
+        shift
+        ;;
+      -1)
+        shift
+        ;;
+      *)
+        echo "usage: movies [-h][-v][-1]"
+        shift
+        ;;
+    esac
+  else
+    
+    echo " --- Valley City Listings --- "
+    curl --silent http://bison6cinema.com/valley-city/ |\
+      grep -o '<h4 class=\"heading14\">.*</h4>' |\
+      sed 's/\(<[^\>]*>\|<\/[^\>]*>\)//g'
+    
+    jt=$(curl --silent http://bison6cinema.com)
+    echo 
+    echo " ---  Jamestown Listings  --- "
+    grep -o '18\">.*</' <<< "$jt" | sed 's/\<[^\>]*>\|<\///g'
+    
+    echo
+    echo " ---    Upcoming Movie    --- "
+    grep -o '<span>.*</span>' <<< "$jt" | sed 's/\(<[^\>]*>\|<br.*>\)//g' 
+  fi
+}

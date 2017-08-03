@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+function branch() {
+  if [[ -d "$PWD"/.git ]]; then
+    alias twig='git symbolic-ref --short -q HEAD'
+  fi
+}

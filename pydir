@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+function pydir() {
+  if [[ "$#" == "0" ]]; then
+      echo "usage: pydir [folder name]"
+      return 1
+  fi
+  if [[ -d "$PWD/$1" ]]; then
+      echo "Current directory already contains given name"
+  else
+      mkdir "$PWD/$1" "$PWD/$1/src" "$PWD/$1/docs" "$PWD/$1/test"
+      # maybe add a check for globalfiles?
+      cp ~/globalfiles/LICENSE "$PWD/$1"
+  fi  
+}
