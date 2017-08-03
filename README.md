@@ -1,1 +1,13 @@
-# Curses-Cmd Resize Utility Program
+# Scripts
+
+### Python
+- curses-win-resize.py
+
+### Bash
+- branch
+- movies
+- pydir
+- refresh
+- verse
+
+### Batch
