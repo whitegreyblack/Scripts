@@ -1,0 +1,39 @@
+#!/bin/bash
+# --------------------------------------------------------------------------- #
+# Author: Sam Whang                                                           #
+# File  : uninstall.sh                                                        #
+# Date  : 07/17/17                                                            #
+# --------------------------------------------------------------------------- #
+
+# check if install even exists | if exists unalias definitions and remove file
+if [ -d ~/.teleport ];
+then
+    # unalias loop
+    if [[ -s ~/.teleport/aliases ]]; then
+      while IFS='=' read -r line || [[ -n "$line" ]];
+      do 
+        word=$(echo "$line" | \
+          awk '{split($2,a,"="); print a[1]}')
+
+        [[ $(type -t $word) == "alias" ]] && \
+          echo "unalias $word" && \
+          unalias $word
+      done < ~/.teleport/aliases
+    else
+      echo "no aliases to unalias"
+    fi
+
+    # remove all files in teleport folder then remove folder itself
+    for file in ~/.teleport/*; do
+      echo "removing $file"
+      rm "$file"
+    done
+    rmdir ~/.teleport
+fi
+
+# checks for teleport script in bashrc
+if [[ -f ~/.bashrc ]] && $(grep -q " -d ~/.teleport " ~/.bashrc); then
+    sed -i.bak '/\-d \~\/.teleport/,+6d' ~/.bashrc
+fi
+
+echo "teleport uninstall complete"

@@ -1,0 +1,74 @@
+#!/bin/bash
+#'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''#
+#                            teleport function                                #
+#                        written by Sam Whang | WGB                           #
+#.............................................................................#
+
+function tp()
+{
+  local OPTIND=1
+
+  # no args -- print definitions for teleport if file exists
+  if [[ "$#" == "0" ]]; then
+    if [[ -f ~/.teleport/aliases && -s ~/.teleport/aliases ]]; then
+      while IFS=' ' read -r line || [[ -n "$line" ]]; do
+        echo "$line"
+      done < ~/.teleport/aliases
+    else
+      echo "no aliases used for teleport"
+    fi
+  fi
+
+  # file parsing
+  while getopts ':a:s:p:h' opt; do
+    case "$opt" in
+      # help or exclusive commands prints usage
+      h|\?)
+        echo "Description: A simple cl tool to change directories"
+        echo "usage: tp [-a [ALIAS] [DIRECTORY]]"
+        echo "          [-s [ALIAS]]"
+        return
+      ;;
+
+      # add path to aliases in shell and file
+      a)
+        if [[ "$3" == "" ]]; then
+          dirpath="$PWD"
+        elif [[ -d "$3" ]]; then
+          dirpath="$3"
+        else
+          echo "path not found" && \
+            return  
+        fi
+        
+        alias "$2"="cd $dirpath"
+
+        if [[ -f ~/.teleport/aliases ]]; then
+          echo "alias $2='cd $dirpath'" >> ~/.teleport/aliases 
+        else
+          echo "alias $2='cd $dirpath'" > ~/.teleport/aliases
+        fi
+        return
+      ;;
+       
+      # subtract path from aliases from shell and file
+      s)
+        type -t "$2" > /dev/null && exists=true || exists=false
+        
+        if [[ "$exists" == true ]]; then
+          unalias "$2"
+          
+          if [[ -f ~/.teleport/aliases ]]; then
+            sed -i "/alias $2/d" ~/.teleport/aliases
+          fi
+        else
+          echo "no alias of that name"
+        fi
+        
+        return
+      ;;
+
+    esac
+  done 
+  return
+}
