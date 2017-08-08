@@ -3,6 +3,9 @@ import sqlite3
 import json
 import csv
 
+grammar = {}
+grammar['+'] = {'+','plus','add'}
+
 # Color format printing
 ORG = '\x1b[0;34;40m'
 YEL = '\x1b[0;33;40m'
