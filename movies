@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-jt=''
 
 __getVC() {
   echo " --- Valley City Listings --- "
@@ -27,6 +26,7 @@ movies() {
   # ---                                                   --- #
   # TODO: want to parse movies by name and get rt scores      #
   # ---                                                   --- #
+  local jt=''
   if [[ "$#" == "0" ]]; then
     __getVC &
     __getJT &
@@ -57,4 +57,3 @@ movies() {
     esac
   fi
 }
-movies "$@"

@@ -12,4 +12,3 @@ function verse() {
     wget -i- > /dev/null 2>&1
   cd "$curr"
 }
-verse
