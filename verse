@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 function verse() {
+  # save the current directory
   curr=$PWD
-  [[ -d ~/Pictures/Verses ]] && cd ~/Pictures/Verses || return
+  [[ ! -d ~/Pictures/Verses ]] && mkdir ~/Pictures/Verses
+  cd ~/Pictures/Verses
   curl --silent https://www.bible.com/verse-of-the-day |\
     grep "votd-image" |\
     grep -oh "/.*jpg" |\
@@ -10,3 +12,4 @@ function verse() {
     wget -i- > /dev/null 2>&1
   cd "$curr"
 }
+verse

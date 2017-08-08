@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function movies() {
+movies() {
   # ---                                                   --- #
   # TODO: allow parameter -1 to return space delimited movies #
   #       prepended by a vc or jt to indicated local listings #
@@ -10,7 +10,9 @@ function movies() {
   if [[ "$#" == "1" ]]; then
     case $1 in
       -h|--row|--horizontal)
-        vc=$(curl --silent http://bison6cinema.com/valley-city/ | grep -o '<h4 class=\"heading14\">.*</h4>' | sed 's/\(<[^\>]*>\|<\/[^\>]*>\)//g')
+        vc=$(curl --silent http://bison6cinema.com/valley-city/ |\
+	    grep -o '<h4 class=\"heading14\">.*</h4>' |\
+	    sed 's/\(<[^\>]*>\|<\/[^\>]*>\)//g')
         shift
         ;;
       -v|--col|--vertical)
@@ -25,7 +27,6 @@ function movies() {
         ;;
     esac
   else
-    
     echo " --- Valley City Listings --- "
     curl --silent http://bison6cinema.com/valley-city/ |\
       grep -o '<h4 class=\"heading14\">.*</h4>' |\
