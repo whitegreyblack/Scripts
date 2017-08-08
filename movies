@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+jt=''
+
 __getVC() {
   echo " --- Valley City Listings --- "
   curl --silent http://bison6cinema.com/valley-city/ |\
@@ -9,14 +11,12 @@ __getVC() {
 
 __getJT() {
   jt=$(curl --silent http://bison6cinema.com)
-  echo 
   echo " ---  Jamestown Listings  --- "
   grep -o '18\">.*</' <<< "$jt" | sed 's/\<[^\>]*>\|<\///g'
 }
 
 __getUP() {
   if [ ! -z ${jt+x} ]; then
-    echo "no jt?"
     jt=$(curl --silent http://bison6cinema.com)
   fi
   echo " ---    Upcoming Movie    --- "
@@ -41,15 +41,17 @@ movies() {
         shift
         ;;
       -jt|--jamestown)
-        __getVC
+        __getJT
         shift
         ;;
       -u|--upcoming)
-        __getVC
+        __getUP
         shift
         ;;
       *)
-        echo "usage: movies [-vc|--valley-city] [-jt|--jamestown]"
+        echo "usage: movies [-vc|--valley-city] 
+              [-jt|--jamestown]
+              [-u|--upcoming]"
         shift
         ;;
     esac
