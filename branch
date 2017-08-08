@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
 function branch() {
-  echo 'branch'
-  if [[ -d "$PWD"/.git ]]; then
-    alias twig='git symbolic-ref --short -q HEAD'
-  fi
-  echo `git symbolic-ref --short -q HEAD`
+  [[ -d "$PWD"/.git ]] && echo `git symbolic-ref --short -q HEAD` || echo "Not a git repository"
 }
