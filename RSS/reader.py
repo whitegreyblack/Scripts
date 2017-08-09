@@ -1,4 +1,5 @@
 import lxml.etree
+import time
 import sys
 import os
 import textwrap
@@ -26,17 +27,15 @@ RED = '\x1b[1;31;40m'
 DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
-def convertXMLtoBinary(string):
-    #return " ".join(format(ord(x), 'b') for x in string)
-    return string.encode()
 
+update=None
 # use requests to get xml
 def getXML(url):
     headers={'user-agent': 'beautify'}
     # urls = [ url for url in url_file ]
     try:
         req = requests.get(url, headers=headers)
-        parseXML(req.text)
+        parseXML(req.text.encode())
     except:
         raise
 # naive cache using dictionary
@@ -46,26 +45,24 @@ posts={}
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
 
-def readXML():
-    # TODO: removal -- will use requests to dynamically update xml text
-    with open('reddit.rss', 'br') as f:
-        string = lt.fromstring(f.read())
-
 def parseXML(string):
-    string=convertXMLtoBinary(string)
-    print(string)
+    global update
     try:
         tree=lxml.etree.fromstring(string)
     except:
         print("Invalid XML format")
-        raise
         return
     title= ""
     postid= ""
     dtime= ""
     urlink= ""
-
     for child in tree:
+        if "updated" in child.tag:
+            if not update:
+                update=child.text
+            else:
+                if child.text==update:
+                    return
         if "entry" in child.tag:
             for subchild in child:
                 if "title" in subchild.tag:
@@ -74,12 +71,19 @@ def parseXML(string):
                     postid=subchild.text
                 if "link" in subchild.tag:
                     urlink=subchild.attrib['href']
-
-        print(" "+postid) 
-        print(textwrap.fill(" "+format(YEL+title+END), width=int(columns), subsequent_indent=' '))
-        print(" "+DIM+urlink[:int(columns)-2:]+END)
+            if postid not in posts.keys():
+                print(textwrap.fill(" "+format(YEL+title+END), width=int(columns), subsequent_indent=' '))
+                print(" "+DIM+urlink[:int(columns)-2:]+END)
+                time.sleep(1)
+        if title and postid and urlink:
+            posts[postid] = post(title, urlink)
+            title, postid, urlink = "", "", ""
 
 if __name__ == "__main__":
     if len(sys.argv)==2:
-        print(sys.argv[1])
-        getXML(sys.argv[1])
+        try:
+            while 1:
+                getXML(sys.argv[1])
+                time.sleep(60)
+        except KeyboardInterrupt:
+            pass
