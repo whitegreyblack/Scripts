@@ -1,3 +1,4 @@
+from multiprocessing import Process
 import lxml.etree
 import time
 import sys
@@ -36,6 +37,24 @@ def getXML(url):
     try:
         req = requests.get(url, headers=headers)
         parseXML(req.text.encode())
+    except:
+        raise
+
+def getXMLs(filename):
+    try:
+        with open(filename, 'r') as f:
+            urls=list(map(str,f.read().split()))
+    except FileNotFoundError:
+        print("No Such File: '{}'".format(filename))
+    except:
+        raise
+    try:
+        while 1:
+            for url in urls:
+                getXML(url)
+            time.sleep(60)
+    except KeyboardInterrupt:
+        pass
     except:
         raise
 # naive cache using dictionary
@@ -82,8 +101,11 @@ def parseXML(string):
 if __name__ == "__main__":
     if len(sys.argv)==2:
         try:
+            getXMLs(sys.argv[1])
+            '''
             while 1:
                 getXML(sys.argv[1])
                 time.sleep(60)
+            '''
         except KeyboardInterrupt:
             pass
