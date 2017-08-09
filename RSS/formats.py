@@ -27,3 +27,4 @@ class atom:
     def __init__(self):
         self.tag=''
         self.attrib={}
+        self.children=[]
