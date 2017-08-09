@@ -2,8 +2,11 @@
 A collection of small scripts I frequently use
 
 ### Python
-- curses-win-resize.py
-
+##### Get Size of Terminal
+```py
+rows, columns = os.popen('stty size', 'r').read().split()
+```
+##### resize window (WINDOWS)
 ### Bash
 - branch
 - movies

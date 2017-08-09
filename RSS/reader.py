@@ -1,9 +1,10 @@
-import lxml.etree as lt
+import lxml.etree
+import sys
 import os
 import textwrap
 from collections import namedtuple
 import requests
-
+import re
 """
 Design
     ---
@@ -17,7 +18,6 @@ Wait 30 seconds
 Refresh xml text and check for any new posts
 Print any posts not in the dictionary aleady
 """
-
 # Print color formatting 
 ORG = '\x1b[0;34;40m'
 YEL = '\x1b[0;33;40m'
@@ -26,32 +26,46 @@ RED = '\x1b[1;31;40m'
 DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
+def convertXMLtoBinary(string):
+    #return " ".join(format(ord(x), 'b') for x in string)
+    return string.encode()
+
 # use requests to get xml
-def getxml():
+def getXML(url):
     headers={'user-agent': 'beautify'}
     # urls = [ url for url in url_file ]
-    url = 'https://www.reddit.com/r/popular/.rss'
-    req = requests.get(url, headers=headers)
-    return req.text
-
+    try:
+        req = requests.get(url, headers=headers)
+        parseXML(req.text)
+    except:
+        raise
 # naive cache using dictionary
-Post = namedtuple('Post', ['title', 'urlink'])
+post = namedtuple('Post', ['title', 'urlink'])
 posts={}
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
 
-# TODO: removal -- will use requests to dynamically update xml text
-with open('reddit.rss', 'br') as f:
-    string = lt.fromstring(f.read())
+def readXML():
+    # TODO: removal -- will use requests to dynamically update xml text
+    with open('reddit.rss', 'br') as f:
+        string = lt.fromstring(f.read())
 
-def parse():
+def parseXML(string):
+    string=convertXMLtoBinary(string)
+    print(string)
+    try:
+        tree=lxml.etree.fromstring(string)
+    except:
+        print("Invalid XML format")
+        raise
+        return
     title= ""
     postid= ""
     dtime= ""
     urlink= ""
 
-    for child in string:
+    for child in tree:
         if "entry" in child.tag:
             for subchild in child:
                 if "title" in subchild.tag:
@@ -65,3 +79,7 @@ def parse():
         print(textwrap.fill(" "+format(YEL+title+END), width=int(columns), subsequent_indent=' '))
         print(" "+DIM+urlink[:int(columns)-2:]+END)
 
+if __name__ == "__main__":
+    if len(sys.argv)==2:
+        print(sys.argv[1])
+        getXML(sys.argv[1])

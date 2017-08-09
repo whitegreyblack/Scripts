@@ -1,13 +1,7 @@
-import curses
 import os
 import platform
 import sys
 
-def main(scr):
-    scr.border()
-    scr.addstr(2,1,"{} {}".format(platform.system(), os.name))
-    c = scr.getch(0,0)
-    
 if __name__ == "__main__":
     y, x = 40, 100
     curses.use_env(True)
