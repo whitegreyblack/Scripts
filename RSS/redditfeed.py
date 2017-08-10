@@ -139,11 +139,11 @@ def parseRSS(string):
                 if "link" in subchild.tag:
                     urlink = subchild.attrib['href']
 
-            # printing time -- uses textwrap to pretty print the post data
             if postid not in posts.keys():
                 # add to the posts cache and reset variables
                 posts[postid] = post(title, urlink)
 
+                # printing time -- uses textwrap to pretty print the post data
                 print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]"),
                                     width=int(columns),
                                     subsequent_indent=' '))
