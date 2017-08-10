@@ -141,17 +141,17 @@ def parseRSS(string):
 
             # printing time -- uses textwrap to pretty print the post data
             if postid not in posts.keys():
+                # add to the posts cache and reset variables
+                posts[postid] = post(title, urlink)
+
                 print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]"),
                                     width=int(columns),
                                     subsequent_indent=' '))
                 print(" " + DIM + urlink[:int(columns):] + END)
-                time.sleep(outputspeed)
-
-                # add to the posts cache and reset variables
-                posts[postid] = post(title, urlink)
                 title, postid, urlink = None, None, None
 
+                time.sleep(outputspeed)
 
-if __name__ == "__main__":
+ __name__ == "__main__":
     if len(sys.argv) == 2:
         parseJSON(sys.argv[1])
