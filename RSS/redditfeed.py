@@ -1,4 +1,4 @@
-from multiprocessing import Process  # havent accomplished yet
+from multiprocessing import Process, Manager  # havent accomplished yet
 from collections import namedtuple
 import lxml.etree
 import requests
@@ -12,8 +12,8 @@ import os
 debug = True
 
 # Used in time.sleep
-outputspeed = 1
-refreshspeed = 1
+outputspeed = 5
+refreshspeed = 5
 
 # Print color formatting
 ORG = '\x1b[0;34;40m'
@@ -25,8 +25,9 @@ END = '\x1b[0m'
 
 # naive cache using dictionary
 feeds = {}
-post = namedtuple('Post', ['title', 'urlink'])
-posts = {}
+post = namedtuple('Post', ['title', 'urlink', 'category'])
+posts = Manager().dict()
+printer=[]
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
@@ -63,18 +64,21 @@ def loopURLS(urls):
     """
     if debug:
         print("looping")
-    processes = [Process(target=fetchURL, args=(url,)) for url in urls]
     try:
-        while True:
+        while 1:
+
+            processes = [Process(target=fetchURL, args=(url,)) for url in urls]
             #for url in urls:
             #    fetchURL(url)
             for process in processes:
                 process.start()
-            for process in processes:
-                process.join()
+            #for process in processes:
+            #    process.join()
+            print(len(posts))
+            return
             time.sleep(refreshspeed)
     except:
-        pass
+        raise
 
 def fetchURL(url):
     """
@@ -101,7 +105,7 @@ def parseRSS(string):
          posts if the rss feed's updated text has been changed
     """
     global update
-
+    global posts 
     title = None
     postid = None
     dtime = None
@@ -146,16 +150,20 @@ def parseRSS(string):
 
             if postid not in posts.keys():
                 # add to the posts cache and reset variables
-                posts[postid] = post(title, urlink)
-
+                print(label, postid, len(posts), [ids for ids in posts.keys()])
+                posts[postid] = post(title, urlink, label)
+                
                 # printing time -- uses textwrap to pretty print the post data
-                print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]"),
-                                    width=int(columns),
-                                    subsequent_indent=' '))
-                print(" " + DIM + urlink[:int(columns):] + END)
+                printer.append(posts[postid])
+                
                 title, postid, urlink = None, None, None
 
-                time.sleep(outputspeed)
+def printPost():
+    title, url, category = printer.pop(0)
+    print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]\n"+DIM+urlink[:int(columns):]+END),
+                                    width=int(columns),
+                                    subsequent_indent=' '))
+    time.sleep(outputspeed)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
