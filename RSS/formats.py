@@ -28,3 +28,8 @@ class atom:
         self.tag=''
         self.attrib={}
         self.children=[]
+
+"""
+    entry
+        ...
+"""
