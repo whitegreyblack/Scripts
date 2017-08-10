@@ -24,9 +24,9 @@ DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
 # naive cache using dictionary
-feeds = {}
+feeds = {} # feeds to hold updated date time
 post = namedtuple('Post', ['title', 'urlink'])
-posts = {}
+posts = {} # dictionary to hold posts
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
