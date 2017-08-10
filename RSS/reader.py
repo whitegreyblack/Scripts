@@ -1,27 +1,14 @@
-import json
 from multiprocessing import Process
+from collections import namedtuple
 import lxml.etree
+import requests
+import textwrap
+import signal
+import json
 import time
 import sys
 import os
-import textwrap
-from collections import namedtuple
-import requests
 import re
-
-"""
-Design
-    ---
-Dont need to write to any files, only read
-    ---
-Start with an empty cache
-Initially call requests for first xml text
-Populate cache with posts
-Print any posts and mark read
-Wait 30 seconds
-Refresh xml text and check for any new posts
-Print any posts not in the dictionary aleady
-"""
 
 # Print color formatting 
 ORG = '\x1b[0;34;40m'
@@ -32,6 +19,8 @@ DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
 # naive cache using dictionary
+feed = namedtuple('Feed', ['updated'])
+feeds={}
 post = namedtuple('Post', ['title', 'urlink'])
 posts={}
 
@@ -39,7 +28,8 @@ posts={}
 rows, columns = os.popen('stty size', 'r').read().split()
 
 
-update=None
+
+# used to check rss feeds
 def parseJSON(filename):
     """
     ARG: Filename - the local file holding the urls in wellformed json
@@ -110,7 +100,6 @@ def parseRSS(string):
         if "category" in child.tag:
             if not label:
                 label=child.attrib["label"]
-                print(" ["+DIM+label+END+"]")
         if "updated" in child.tag:
             if not update:
                 update=child.text
@@ -128,9 +117,9 @@ def parseRSS(string):
 
             if postid not in posts.keys():
                 # printing time -- uses textwrap to pretty print the post data
-                print(textwrap.fill(" "+format(YEL+title+END), width=int(columns), subsequent_indent=' '))
-                print(" "+DIM+urlink[:int(columns)-2:]+END)
-                time.sleep(0.5)
+                print(textwrap.fill(format(" "+YEL+title+END+" ["+label+"]"), width=int(columns), subsequent_indent=' '))
+                print(" "+DIM+urlink[:int(columns):]+END)
+                time.sleep(1)
 
         if title and postid and urlink:
             # add to the posts cache and reset variables
