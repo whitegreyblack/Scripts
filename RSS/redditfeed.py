@@ -1,14 +1,19 @@
-from multiprocessing import Process
+from multiprocessing import Process # havent accomplished yet
 from collections import namedtuple
 import lxml.etree
 import requests
 import textwrap
-import signal
 import json
 import time
 import sys
 import os
-import re
+
+# debug variable
+debug=False
+
+# Used in time.sleep
+outputspeed=1
+refreshspeed=1
 
 # Print color formatting 
 ORG = '\x1b[0;34;40m'
@@ -19,15 +24,12 @@ DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
 # naive cache using dictionary
-feed = namedtuple('Feed', ['updated'])
 feeds={}
 post = namedtuple('Post', ['title', 'urlink'])
 posts={}
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
-
-
 
 # used to check rss feeds
 def parseJSON(filename):
@@ -37,6 +39,8 @@ def parseJSON(filename):
          Sends the parsed url list to getXML
     """
     urls=None
+    if debug:
+        print("parse JSON")
     try:
         with open(filename, 'r') as f:
             data=json.loads(f.read())
@@ -54,11 +58,13 @@ def loopURLS(urls):
     ARG: Urls - the list of urls to retrieve data from
     DEF: Generates a while loop of fetching xml data to keep feed alive
     """
+    if debug:
+        print("looping")
     try:
         while 1:
             for url in urls:
                 fetchURL(url)
-            time.sleep(5)
+            time.sleep(refreshspeed)
     except KeyboardInterrupt:
         pass
 
@@ -68,6 +74,8 @@ def fetchURL(url):
     DEF: Using requests, sets user-agent header and gets request from url
          If the url is illformed or not complete then an exception is raised
     """
+    if debug:
+        print("Fetching")
     headers={'user-agent': 'beautify'}
     try:
         req = requests.get(url, headers=headers)
@@ -84,28 +92,39 @@ def parseRSS(string):
          posts if the rss feed's updated text has been changed
     """
     global update
+
+    title=None
+    postid= None
+    dtime= None
+    urlink= None
+    label=None
+    urlid=None
+
     try:
         tree=lxml.etree.fromstring(string)
     except:
         print("Invalid XML format")
         return
 
-    title= ""
-    postid= ""
-    dtime= ""
-    urlink= ""
-    label=""
-
     for child in tree:
+        # header information
+        if "id" in child.tag:
+            urlid=child.text
         if "category" in child.tag:
-            if not label:
-                label=child.attrib["label"]
+            label=child.attrib["label"]
         if "updated" in child.tag:
-            if not update:
-                update=child.text
-            else:
-                if child.text==update:
+            update=child.text
+
+        # check and update feed info -- should only happen once every parse
+        # if update is the same as parsed code then no changes and exit
+        if urlid and update:
+            if urlid in feeds.keys():
+                if feeds[urlid] == update:
                     return
+            feeds[urlid] = update
+            urlid, update = None, None
+
+        # entry post information
         if "entry" in child.tag:
             for subchild in child:
                 if "title" in subchild.tag:
@@ -115,16 +134,17 @@ def parseRSS(string):
                 if "link" in subchild.tag:
                     urlink=subchild.attrib['href']
 
+            # printing time -- uses textwrap to pretty print the post data
             if postid not in posts.keys():
-                # printing time -- uses textwrap to pretty print the post data
-                print(textwrap.fill(format(" "+YEL+title+END+" ["+label+"]"), width=int(columns), subsequent_indent=' '))
+                print(textwrap.fill(format(" "+YEL+title+END+" ["+label+"]"), 
+                                    width=int(columns), 
+                                    subsequent_indent=' '))
                 print(" "+DIM+urlink[:int(columns):]+END)
-                time.sleep(1)
+                time.sleep(outputspeed)
 
-        if title and postid and urlink:
-            # add to the posts cache and reset variables
-            posts[postid] = post(title, urlink)
-            title, postid, urlink = "", "", ""
+                # add to the posts cache and reset variables
+                posts[postid] = post(title, urlink)
+                title, postid, urlink = None, None, None
 
 if __name__ == "__main__":
     if len(sys.argv)==2:
