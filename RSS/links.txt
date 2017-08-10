@@ -1,4 +1,0 @@
-https://www.reddit.com/r/popular/.rss
-https://www.reddit.com/r/commandline/.rss
-https://www.reddit.com/r/dota2/.rss
-https://www.google.com/news/rss

@@ -1,0 +1,14 @@
+{
+	"reddit" : 
+	{
+		"schema" : "https://www.reddit.com/r/{}/.rss",
+		"links": [
+			{ "sub" : "popular" },
+			{ "sub" : "bash" },
+			{ "sub" : "commandline" },
+			{ "sub" : "dota2" },
+			{ "sub" : "personalfinance" },
+			{ "sub" : "tifu" }
+		]
+	}
+}

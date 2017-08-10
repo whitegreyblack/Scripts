@@ -1,3 +1,4 @@
+import json
 from multiprocessing import Process
 import lxml.etree
 import time
@@ -7,6 +8,7 @@ import textwrap
 from collections import namedtuple
 import requests
 import re
+
 """
 Design
     ---
@@ -20,6 +22,7 @@ Wait 30 seconds
 Refresh xml text and check for any new posts
 Print any posts not in the dictionary aleady
 """
+
 # Print color formatting 
 ORG = '\x1b[0;34;40m'
 YEL = '\x1b[0;33;40m'
@@ -28,35 +31,6 @@ RED = '\x1b[1;31;40m'
 DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
-
-update=None
-# use requests to get xml
-def getXML(url):
-    headers={'user-agent': 'beautify'}
-    # urls = [ url for url in url_file ]
-    try:
-        req = requests.get(url, headers=headers)
-        parseXML(req.text.encode())
-    except:
-        raise
-
-def getXMLs(filename):
-    try:
-        with open(filename, 'r') as f:
-            urls=list(map(str,f.read().split()))
-    except FileNotFoundError:
-        print("No Such File: '{}'".format(filename))
-    except:
-        raise
-    try:
-        while 1:
-            for url in urls:
-                getXML(url)
-            time.sleep(60)
-    except KeyboardInterrupt:
-        pass
-    except:
-        raise
 # naive cache using dictionary
 post = namedtuple('Post', ['title', 'urlink'])
 posts={}
@@ -64,18 +38,79 @@ posts={}
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
 
-def parseXML(string):
+
+update=None
+def parseJSON(filename):
+    """
+    ARG: Filename - the local file holding the urls in wellformed json
+    DEF: Parses the filename based on url base schema and links data
+         Sends the parsed url list to getXML
+    """
+    urls=None
+    try:
+        with open(filename, 'r') as f:
+            data=json.loads(f.read())
+            schema=data["reddit"]["schema"]
+            links=data["reddit"]["links"]
+            urls=[schema.format(link["sub"]) for link in links]
+    except:
+        raise
+        print("Incorrect Json Format")
+    if urls:
+        loopURLS(urls)
+
+def loopURLS(urls):
+    """
+    ARG: Urls - the list of urls to retrieve data from
+    DEF: Generates a while loop of fetching xml data to keep feed alive
+    """
+    try:
+        while 1:
+            for url in urls:
+                fetchURL(url)
+            time.sleep(5)
+    except KeyboardInterrupt:
+        pass
+
+def fetchURL(url):
+    """
+    ARG: Url - a single uri link used by requests package to fetch rss data
+    DEF: Using requests, sets user-agent header and gets request from url
+         If the url is illformed or not complete then an exception is raised
+    """
+    headers={'user-agent': 'beautify'}
+    try:
+        req = requests.get(url, headers=headers)
+        parseRSS(req.text.encode())
+    except:
+        raise
+
+def parseRSS(string):
+    """
+    ARG: String - rss text encoded in bytes
+    DEF: creates a lxml tree from string and walks down tree access data
+         Puts all entries into a posts dictionary so that reiteration does
+         not print the same post again. Also loops again only prints more
+         posts if the rss feed's updated text has been changed
+    """
     global update
     try:
         tree=lxml.etree.fromstring(string)
     except:
         print("Invalid XML format")
         return
+
     title= ""
     postid= ""
     dtime= ""
     urlink= ""
+    label=""
+
     for child in tree:
+        if "category" in child.tag:
+            if not label:
+                label=child.attrib["label"]
+                print(" ["+DIM+label+END+"]")
         if "updated" in child.tag:
             if not update:
                 update=child.text
@@ -90,22 +125,18 @@ def parseXML(string):
                     postid=subchild.text
                 if "link" in subchild.tag:
                     urlink=subchild.attrib['href']
+
             if postid not in posts.keys():
+                # printing time -- uses textwrap to pretty print the post data
                 print(textwrap.fill(" "+format(YEL+title+END), width=int(columns), subsequent_indent=' '))
                 print(" "+DIM+urlink[:int(columns)-2:]+END)
-                time.sleep(1)
+                time.sleep(0.5)
+
         if title and postid and urlink:
+            # add to the posts cache and reset variables
             posts[postid] = post(title, urlink)
             title, postid, urlink = "", "", ""
 
 if __name__ == "__main__":
     if len(sys.argv)==2:
-        try:
-            getXMLs(sys.argv[1])
-            '''
-            while 1:
-                getXML(sys.argv[1])
-                time.sleep(60)
-            '''
-        except KeyboardInterrupt:
-            pass
+        parseJSON(sys.argv[1])
