@@ -9,7 +9,7 @@ import sys
 import os
 
 # debug variable
-debug = False
+debug = True
 
 # Used in time.sleep
 outputspeed = 1
@@ -63,14 +63,18 @@ def loopURLS(urls):
     """
     if debug:
         print("looping")
+    processes = [Process(target=fetchURL, args=(url,)) for url in urls]
     try:
         while True:
-            for url in urls:
-                fetchURL(url)
+            #for url in urls:
+            #    fetchURL(url)
+            for process in processes:
+                process.start()
+            for process in processes:
+                process.join()
             time.sleep(refreshspeed)
-    except KeyboardInterrupt:
+    except:
         pass
-
 
 def fetchURL(url):
     """
@@ -108,6 +112,7 @@ def parseRSS(string):
     try:
         tree = lxml.etree.fromstring(string)
     except BaseException:
+        print(string)
         print("Invalid XML format")
         return
 
@@ -152,6 +157,6 @@ def parseRSS(string):
 
                 time.sleep(outputspeed)
 
- __name__ == "__main__":
+if __name__ == "__main__":
     if len(sys.argv) == 2:
         parseJSON(sys.argv[1])
