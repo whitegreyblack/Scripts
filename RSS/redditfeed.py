@@ -1,4 +1,4 @@
-from multiprocessing import Process # havent accomplished yet
+from multiprocessing import Process  # havent accomplished yet
 from collections import namedtuple
 import lxml.etree
 import requests
@@ -9,13 +9,13 @@ import sys
 import os
 
 # debug variable
-debug=False
+debug = False
 
 # Used in time.sleep
-outputspeed=1
-refreshspeed=1
+outputspeed = 1
+refreshspeed = 1
 
-# Print color formatting 
+# Print color formatting
 ORG = '\x1b[0;34;40m'
 YEL = '\x1b[0;33;40m'
 GRN = '\x1b[1;32;40m'
@@ -24,34 +24,37 @@ DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
 # naive cache using dictionary
-feeds={}
+feeds = {}
 post = namedtuple('Post', ['title', 'urlink'])
-posts={}
+posts = {}
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
 
 # used to check rss feeds
+
+
 def parseJSON(filename):
     """
     ARG: Filename - the local file holding the urls in wellformed json
     DEF: Parses the filename based on url base schema and links data
          Sends the parsed url list to getXML
     """
-    urls=None
+    urls = None
     if debug:
         print("parse JSON")
     try:
         with open(filename, 'r') as f:
-            data=json.loads(f.read())
-            schema=data["reddit"]["schema"]
-            links=data["reddit"]["links"]
-            urls=[schema.format(link["sub"]) for link in links]
-    except:
+            data = json.loads(f.read())
+            schema = data["reddit"]["schema"]
+            links = data["reddit"]["links"]
+            urls = [schema.format(link["sub"]) for link in links]
+    except BaseException:
         raise
         print("Incorrect Json Format")
     if urls:
         loopURLS(urls)
+
 
 def loopURLS(urls):
     """
@@ -61,12 +64,13 @@ def loopURLS(urls):
     if debug:
         print("looping")
     try:
-        while 1:
+        while True:
             for url in urls:
                 fetchURL(url)
             time.sleep(refreshspeed)
     except KeyboardInterrupt:
         pass
+
 
 def fetchURL(url):
     """
@@ -76,12 +80,13 @@ def fetchURL(url):
     """
     if debug:
         print("Fetching")
-    headers={'user-agent': 'beautify'}
+    headers = {'user-agent': 'beautify'}
     try:
         req = requests.get(url, headers=headers)
         parseRSS(req.text.encode())
-    except:
+    except BaseException:
         raise
+
 
 def parseRSS(string):
     """
@@ -93,27 +98,27 @@ def parseRSS(string):
     """
     global update
 
-    title=None
-    postid= None
-    dtime= None
-    urlink= None
-    label=None
-    urlid=None
+    title = None
+    postid = None
+    dtime = None
+    urlink = None
+    label = None
+    urlid = None
 
     try:
-        tree=lxml.etree.fromstring(string)
-    except:
+        tree = lxml.etree.fromstring(string)
+    except BaseException:
         print("Invalid XML format")
         return
 
     for child in tree:
         # header information
         if "id" in child.tag:
-            urlid=child.text
+            urlid = child.text
         if "category" in child.tag:
-            label=child.attrib["label"]
+            label = child.attrib["label"]
         if "updated" in child.tag:
-            update=child.text
+            update = child.text
 
         # check and update feed info -- should only happen once every parse
         # if update is the same as parsed code then no changes and exit
@@ -128,24 +133,25 @@ def parseRSS(string):
         if "entry" in child.tag:
             for subchild in child:
                 if "title" in subchild.tag:
-                    title=subchild.text
+                    title = subchild.text
                 if "id" in subchild.tag:
-                    postid=subchild.text
+                    postid = subchild.text
                 if "link" in subchild.tag:
-                    urlink=subchild.attrib['href']
+                    urlink = subchild.attrib['href']
 
             # printing time -- uses textwrap to pretty print the post data
             if postid not in posts.keys():
-                print(textwrap.fill(format(" "+YEL+title+END+" ["+label+"]"), 
-                                    width=int(columns), 
+                print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]"),
+                                    width=int(columns),
                                     subsequent_indent=' '))
-                print(" "+DIM+urlink[:int(columns):]+END)
+                print(" " + DIM + urlink[:int(columns):] + END)
                 time.sleep(outputspeed)
 
                 # add to the posts cache and reset variables
                 posts[postid] = post(title, urlink)
                 title, postid, urlink = None, None, None
 
+
 if __name__ == "__main__":
-    if len(sys.argv)==2:
+    if len(sys.argv) == 2:
         parseJSON(sys.argv[1])
