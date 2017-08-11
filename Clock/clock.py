@@ -5,6 +5,12 @@ import time
 import sys
 import os
 
+# clock.py -- clock app made using curses
+# used in cmder/conemu for windows os
+__author__  = "Sam WHang | WGB"
+__email__   = "sangwoowhang@gmail.com"
+__license__ = "MIT"
+
 def main(scr):
 
     # function returns a tuple pair from a one/two pair digit
@@ -56,6 +62,7 @@ def main(scr):
         ch = scr.getch()
         if ch == ord('q'):
             break
+
 if __name__ == "__main__":
     rows, columns = os.popen('stty size', 'r').read().split()
     # resize to fit the clock
@@ -65,17 +72,9 @@ if __name__ == "__main__":
     os.environ['COLUMNS']=str(x)
     # using conemu/cmder terminal
     if platform.system() == "Windows":
-        try:
-            os.system('conemuc -guimacro windowpossize 0 0 {} {}'.format(
-                x, y)) 
-        except:
-            raise
+        os.system('conemuc -guimacro windowpossize 0 0 {} {}'.format(x, y)) 
     else:
         raise NotImplementedError
         exit(-1)  
 
     curses.wrapper(main)
-    try:
-        os.system('conemuc -guimacro windowpossize 0 0 {} {}'.format(x, y))
-    except:
-        raise
