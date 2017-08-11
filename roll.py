@@ -3,6 +3,10 @@ import click
 from datetime import datetime
 from random import seed
 from random import randint as rint
+__author__  = "Sam WHang | WGB"
+__email__   = "sangwoowhang@gmail.com"
+__license__ = "MIT"
+
 
 seed(datetime.now())
 

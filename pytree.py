@@ -1,3 +1,8 @@
+__author__  = "Sam WHang | WGB"
+__email__   = "sangwoowhang@gmail.com"
+__license__ = "MIT"
+
+
 import os
 
 #blue for directories
