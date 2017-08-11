@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# File    : branch - outputs branch name to use in bash prompt
+# Author  : Sam Whang | WGB
+# License : MIT
+
 function branch() {
   [[ -d "$PWD"/.git ]] && echo `git symbolic-ref --short -q HEAD` || echo "Not a git repository"
 }

@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
 
+# File    : refresh functions used in my bashrc
+# Author  : Sam Whang | WGB
+# License : MIT
+
+# command to resourece all bash scripts
 function shs() {
-  shb
-  sha
-  def
+  shb && sha && def
 }
+
+# command to resource bashrc
 function shb() {
   . ~/.bashrc
+}
+
+# command to resource bash aliases
 function sha() {
   . ~/.bash_aliases
 }
+
+# source my scripts folder
 function def() {
   if [[ - ~/.scripts ]]; then
     for file in ~/.scripts/*; do

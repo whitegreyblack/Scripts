@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# File    : movies.sh: gets movies from the local theater in VC, ND
+# Author  : Sam Whang | WGB
+# License : MIT
 
 __getVC() {
   echo " --- Valley City Listings --- "
