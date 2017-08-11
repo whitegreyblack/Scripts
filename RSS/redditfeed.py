@@ -24,9 +24,9 @@ DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
 # naive cache using dictionary
-feeds = {} # feeds to hold updated date time
+feeds = {}  # feeds to hold updated date time
 post = namedtuple('Post', ['title', 'urlink'])
-posts = {} # dictionary to hold posts
+posts = {}  # dictionary to hold posts
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
@@ -149,9 +149,9 @@ def parseRSS(string):
                                     subsequent_indent=' '))
                 print(" " + DIM + urlink[:int(columns):] + END)
                 title, postid, urlink = None, None, None
-
                 time.sleep(outputspeed)
 
- __name__ == "__main__":
+
+if __name__ == "__main__":
     if len(sys.argv) == 2:
         parseJSON(sys.argv[1])
