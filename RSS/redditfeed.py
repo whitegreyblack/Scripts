@@ -27,7 +27,6 @@ END = '\x1b[0m'
 feeds = {}
 post = namedtuple('Post', ['title', 'urlink', 'category'])
 posts = Manager().dict()
-printer=[]
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
@@ -157,13 +156,7 @@ def parseRSS(string):
                 printer.append(posts[postid])
                 
                 title, postid, urlink = None, None, None
-
-def printPost():
-    title, url, category = printer.pop(0)
-    print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]\n"+DIM+urlink[:int(columns):]+END),
-                                    width=int(columns),
-                                    subsequent_indent=' '))
-    time.sleep(outputspeed)
+                time.sleep(outputspeed)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
