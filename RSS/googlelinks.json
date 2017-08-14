@@ -9,8 +9,8 @@
 			{ "sub" : "TECHNOLOGY" },
 			{ "sub" : "ENTERTAINMENT" },
 			{ "sub" : "SPORTS" },
-            { "sub" : "SCIENCE" },
-            { "sub" : "HEALTH" }
+		    	{ "sub" : "SCIENCE" },
+		    	{ "sub" : "HEALTH" }
 		]
 	}
 }

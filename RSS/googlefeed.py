@@ -8,11 +8,11 @@ import sys
 import os
 
 # debug variable
-debug = True
+debug = False
 
 # Used in time.sleep
-outputspeed = 5
-refreshspeed = 5
+outputspeed = 1
+refreshspeed = 3
 
 # Print color formatting
 ORG = '\x1b[0;34;40m'
@@ -186,8 +186,12 @@ def parseRSS(string):
                             urlink = attr.text
                         if "category" in attr.tag:
                             label = attr.text
-                    print(title, urlink, label)
-    print(urlid, dtime, build)
+                    print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]"),
+                                        width=int(columns)-2,
+                                        subsequent_indent=' '))
+                    print(" " + DIM + urlink[:int(columns):] + END)
+                    time.sleep(outputspeed)
+    #print(urlid, dtime, build)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
