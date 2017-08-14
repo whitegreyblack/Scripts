@@ -1,4 +1,3 @@
-from multiprocessing import Process, Manager  # havent accomplished yet
 from collections import namedtuple
 import lxml.etree
 import requests
@@ -12,8 +11,8 @@ import os
 debug = True
 
 # Used in time.sleep
-outputspeed = 5
-refreshspeed = 5
+outputspeed = 1
+refreshspeed = 3
 
 # Print color formatting
 ORG = '\x1b[0;34;40m'
@@ -26,7 +25,7 @@ END = '\x1b[0m'
 # naive cache using dictionary
 feeds = {}
 post = namedtuple('Post', ['title', 'urlink', 'category'])
-posts = Manager().dict()
+posts = {}
 
 # used in text wrapping to print clean wrapped lines
 rows, columns = os.popen('stty size', 'r').read().split()
@@ -65,16 +64,8 @@ def loopURLS(urls):
         print("looping")
     try:
         while 1:
-
-            processes = [Process(target=fetchURL, args=(url,)) for url in urls]
-            #for url in urls:
-            #    fetchURL(url)
-            for process in processes:
-                process.start()
-            #for process in processes:
-            #    process.join()
-            print(len(posts))
-            return
+            for url in urls:
+                fetchURL(url)
             time.sleep(refreshspeed)
     except:
         raise
@@ -149,12 +140,14 @@ def parseRSS(string):
 
             if postid not in posts.keys():
                 # add to the posts cache and reset variables
-                print(label, postid, len(posts), [ids for ids in posts.keys()])
+                #print(label, postid, len(posts), [ids for ids in posts.keys()])
                 posts[postid] = post(title, urlink, label)
                 
                 # printing time -- uses textwrap to pretty print the post data
-                printer.append(posts[postid])
-                
+                print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]"),
+                                    width=int(columns),
+                                    subsequent_indent=' '))
+                print(" " + DIM + urlink[:int(columns):] + END)
                 title, postid, urlink = None, None, None
                 time.sleep(outputspeed)
 

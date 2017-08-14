@@ -1,4 +1,3 @@
-from multiprocessing import Process, Manager  # havent accomplished yet
 from collections import namedtuple
 import lxml.etree
 import requests
@@ -26,7 +25,7 @@ END = '\x1b[0m'
 # naive cache using dictionary
 feeds = {}
 post = namedtuple('Post', ['title', 'urlink', 'category'])
-posts = Manager().dict()
+posts = {}
 printer=[]
 
 # used in text wrapping to print clean wrapped lines
@@ -47,12 +46,14 @@ def parseJSON(filename):
     try:
         with open(filename, 'r') as f:
             data = json.loads(f.read())
-            schema = data["reddit"]["schema"]
-            links = data["reddit"]["links"]
-            urls = [schema.format(link["sub"]) for link in links]
-    except BaseException:
-        raise
-        print("Incorrect Json Format")
+            for newssite in data:
+                print(newssite)
+                schema = data[newssite]["schema"]
+                links = data[newssite]["links"]
+                urls = [schema.format(link["sub"]) for link in links]
+                print(urls)
+    except KeyError:
+        print("Using wrong JSON format")
     if urls:
         loopURLS(urls)
 
@@ -96,21 +97,22 @@ def parseRSS(string):
          posts if the rss feed's updated text has been changed
     """
     global update
-    global posts 
+    global posts
+    '''
     title = None
     postid = None
     dtime = None
     urlink = None
     label = None
     urlid = None
-
+    '''
     try:
         tree = lxml.etree.fromstring(string)
     except BaseException:
         print(string)
         print("Invalid XML format")
         return
-
+    '''
     for child in tree:
         # header information
         if "id" in child.tag:
@@ -143,14 +145,52 @@ def parseRSS(string):
                 # add to the posts cache and reset variables
                 print(label, postid, len(posts), [ids for ids in posts.keys()])
                 posts[postid] = post(title, urlink, label)
-                
+
                 # printing time -- uses textwrap to pretty print the post data
                 printer.append(posts[postid])
-                
+
                 title, postid, urlink = None, None, None
 
                 time.sleep(outputspeed)
+    '''
+    """
+    RSS V2.0:
+        channel { generator | title | link | language | copyright | pubdate | lastbuilddate }
+        item { title | link | category | pubdate | descrption }
+        title == title
+        pubdate == dtime but in different format
+        link == urlink
+        category == label just different name
+        no
+    """
+    title = None
+    dtime = None
+    build = None
+    label = None
+    urlink = None
+    for child in tree:
+        if "channel" in child.tag:
+            for info in child:
+                # header information
+                if "title" in info.tag:
+                    urlid = info.text
+                if "pubDate" in info.tag:
+                    dtime = info.text
+                if "lastBuildDate" in info.tag:
+                    build = info.text
+                if "item" in info.tag:
+                    for attr in info:
+                        if "title" in attr.tag:
+                            title = attr.text
+                        if "link" in attr.tag:
+                            urlink = attr.text
+                        if "category" in attr.tag:
+                            label = attr.text
+                    print(title, urlink, label)
+    print(urlid, dtime, build)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         parseJSON(sys.argv[1])
+    else:
+        print("enter in a links json file")
