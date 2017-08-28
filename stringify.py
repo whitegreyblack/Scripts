@@ -19,7 +19,6 @@ def stringify(string, debug=False):
                 # buildings
                 # some other stuff
                 else:
-                    print(pixels[i,j])
                     line += "."
             lines.append(line)
         if debug:
