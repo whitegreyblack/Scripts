@@ -7,56 +7,48 @@
 __getVC() {
   echo " --- Valley City Listings --- "
   curl --silent http://bison6cinema.com/valley-city/ |\
-    grep -o '<h4 class=\"heading14\">.*</h4>' |\
-    sed 's/\(<[^\>]*>\|<\/[^\>]*>\)//g'
+    grep -o '<h4.*>.*</h4>' |\
+    sed 's/\(<[^\>]*>\|<\/[^\>]*>\)//g' |\
+    sed "s/&#8217;/\'/"
 }
 
 __getJT() {
+  # save the results to use in upcoming movies even if not specified
   jt=$(curl --silent http://bison6cinema.com)
   echo " ---  Jamestown Listings  --- "
-  grep -o '18\">.*</' <<< "$jt" | sed 's/\<[^\>]*>\|<\///g'
+  grep -o '18\">.*</' <<< "$jt" |\
+  sed 's/\<[^\>]*>\|<\///g' |\
+  sed "s/&#8217;/\'/"
+
 }
 
 __getUP() {
-  if [ ! -z ${jt+x} ]; then
-    jt=$(curl --silent http://bison6cinema.com)
-  fi
-  echo " ---    Upcoming Movie    --- "
-  grep -o '<span>.*</span>' <<< "$jt" | sed 's/\(<[^\>]*>\|<br.*>\)//g'  
+  # checks if jamestowns list was pulls else pulls it 
+  if [ ! -z ${jt+x} ]; then jt=$(curl --silent http://bison6cinema.com); fi
+  echo " ---    Upcoming Movies   --- "
+  grep -o '<span>.*</span>' <<< "$jt" |\
+  sed 's/\(<[^\>]*>\|<br.*>\)//g' |\
+  sed "s/&#8217;/\'/"
 }
 
 movies() {
-  # ---                                                   --- #
-  # TODO: want to parse movies by name and get rt scores      #
-  # ---                                                   --- #
   local jt=''
-  if [[ "$#" == "0" ]]; then
-    __getVC &
-    __getJT &
-    wait
-    __getUP
-  fi
-  
+  if [[ "$#" == "0" ]]; then __getVC && __getJT && __getUP; fi
   if [[ "$#" == "1" ]]; then
     case $1 in
       -vc|--valley-city)
-        __getVC
-        shift
-        ;;
+        __getVC && shift ;;
       -jt|--jamestown)
-        __getJT
-        shift
-        ;;
-      -u|--upcoming)
-        __getUP
-        shift
-        ;;
+        __getJT && shift ;;
+      -up|--upcoming)
+        __getUP && shift ;;
       *)
         echo "usage: movies [-vc|--valley-city] 
               [-jt|--jamestown]
               [-u|--upcoming]"
-        shift
-        ;;
+        shift ;;
     esac
   fi
 }
+movies
+
