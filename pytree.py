@@ -47,6 +47,5 @@ def list_files(startpath):
                 else:
                     print('{}{}'.format(subindent, f))
 
-
 if __name__ == "__main__":
     list_files(os.getcwd())
