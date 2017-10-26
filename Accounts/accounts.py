@@ -1,8 +1,18 @@
+#!/bin/env python
+'''
+Author: Sam Whang
+File  : accounts.py
+Usage : py accounts.py
+Info  : calculates debit and credit transactions using a csv file
+        and prints remainder in every transaction line printed
+'''
+
 from collections import namedtuple
 import sqlite3
 import json
 import csv
 
+# TODO: Extensions for script parsing and formatting
 grammar = {}
 grammar['+'] = {'+', 'plus', 'add'}
 
@@ -32,15 +42,16 @@ fields = (
     "Date",
     "Description")
 
+# Parse the transactions data from csv file
 reader = csv.DictReader(csvfile, fields)
 read = False
-
 for row in reader:
     json.dump(row, jsonfile)
     jsonfile.write('\n')
 jsonfile.close()
 csvfile.close()
 
+# string outputs used in printing
 spacer = "+-----------------+------------------+----------------+-----+"
 credit = "| " + GRN + "Credit" + END + ": {:7.2f} |\
         Balance: {:7.2f} | Total: {:7.2f} | {:3} | {} | {:7.2f}"
@@ -69,6 +80,7 @@ with open('transactions.json', 'r') as transactions:
 
         print(spacer)
 
+        # Found a credit transaction
         if cx is not "":
             cx = float(cx)
             print(credit.format(cx,
@@ -80,6 +92,7 @@ with open('transactions.json', 'r') as transactions:
             account = tx(bx - cx)
             monthly = 0.00
 
+        # found a debit transaction
         if dx is not "":
             dx = float(dx)
             print(debit.format(-dx,

@@ -1,4 +1,20 @@
 #!/bin/bash
+
+# Author: Sam Whang
+# File  : salary.sh
+# Usage : ./salary
+# Info  : calculating costs of living for current salary
+
+# Print formatting options
+bold="\e[1m"
+end="\e[0m"
+
+# string outputs
+header="+===========+===========+===========+===========+===========+
+| Total In  | Total Out | Total Bi  | Take Home | Remaining |"
+divide="+-----------+-----------+-----------+-----------+-----------+"
+format="| %9s | %9s | %9s | %9s | %9s |\n" 
+
 echo "Average Monthly Expense: ~1,600"
 echo "+=====+======+=====+======+======+======+=====+=====+=======+"
 echo "| MON | RENT | CAR | LOAN | WIFI | FOOD | GYM | GAS | TOTAL |"
@@ -18,15 +34,7 @@ echo "+--------+---------+--------+-----------+--------+"
 echo "| 45,000 | 3,750   | 1,875  | ~1,600    | ~1,600 |"
 echo "+--------+---------+--------+-----------+--------+"
 
-# Print formatting options
-bold="\e[1m"
-end="\e[0m"
-
-
-header="+===========+===========+===========+===========+===========+
-| Total In  | Total Out | Total Bi  | Take Home | Remaining |"
-divide="+-----------+-----------+-----------+-----------+-----------+"
-format="| %9s | %9s | %9s | %9s | %9s |\n" 
+# write lines for each iteration and caluclate using bc
 printf "$bold%s$end\n%s\n" "$header" "$divide"
 for total in `seq 30000 5000 100000`; do
   monthly=$(($total/12))
