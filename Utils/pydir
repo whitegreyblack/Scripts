@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# File    : function sets up a template python directory
+#           with test, docs, and source folders
+# Author  : Sam Whang | WGB
+# License : MIT
+
+
 function pydir() {
   if [[ "$#" == "0" ]]; then
       echo "usage: pydir [folder name]"

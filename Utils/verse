@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# File    : function to parse website and scrape daily image
+# Author  : Sam Whang | WGB
+# License : MIT
+
+
 function verse() {
   # save the current directory
   curr=$PWD

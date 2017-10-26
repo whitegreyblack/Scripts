@@ -22,3 +22,6 @@ profile.ps1 -- a powershell profile script to modify the powershell command prom
 
 ## RSS
 *Feeds  : Scripts to consume rss feeds from google news and reddit subreddits and display them in terminal on order of incoming data
+
+## Utils:
+Other various small scripts which imporve my quality of life through automation and shorthand commands
