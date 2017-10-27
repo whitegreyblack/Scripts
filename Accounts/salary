@@ -34,13 +34,19 @@ echo "+--------+---------+--------+-----------+--------+"
 echo "| 45,000 | 3,750   | 1,875  | ~1,600    | ~1,600 |"
 echo "+--------+---------+--------+-----------+--------+"
 
+echo "Date   | Total   | Takehome| Taxes  | Retire| Other|Bnfts"
+echo "---------------------------------------------------------"
+echo "OCT 13 | 1754.11 | 1403.65 | 289.94 | 52.50 | 4.11 | 3.91"
 # write lines for each iteration and caluclate using bc
 printf "$bold%s$end\n%s\n" "$header" "$divide"
 for total in `seq 30000 5000 100000`; do
   monthly=$(($total/12))
   bimonth=$(($monthly/2))
-  takehome=$(echo "$bimonth*0.8125" | bc)
-  remaining=$(echo "$takehome*2-1400" | bc)
+  # if bc doesn't work use awk
+  # takehome=$(echo "$bimonth*0.8125" | bc)
+  # remaining=$(echo "$takehome*2-1400" | bc)
+  takehome=$(awk "BEGIN {print \"$bimonth\"*0.8125}")
+  remaining=$(awk "BEGIN {print \"$takehome\"*2-1400}")
   printf "$format" "$total" "$monthly" "$bimonth" "$takehome" "$remaining"
   echo "$divide"
 done
