@@ -37,6 +37,7 @@ echo "+--------+---------+--------+-----------+--------+"
 echo "Date   | Total   | Takehome| Taxes  | Retire| Other|Bnfts"
 echo "---------------------------------------------------------"
 echo "OCT 13 | 1754.11 | 1403.65 | 289.94 | 52.50 | 4.11 | 3.91"
+
 # write lines for each iteration and caluclate using bc
 printf "$bold%s$end\n%s\n" "$header" "$divide"
 for total in `seq 30000 5000 100000`; do

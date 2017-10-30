@@ -8,9 +8,16 @@ Info  : calculates debit and credit transactions using a csv file
 '''
 
 from collections import namedtuple
+from namedlist import namedlist
+from datetime import date
 import sqlite3
 import json
 import csv
+import sys
+
+# pre-check
+if len(sys.argv) < 3:
+    exit("Incorrect num of args")
 
 # TODO: Extensions for script parsing and formatting
 grammar = {}
@@ -23,16 +30,18 @@ GRN = '\x1b[1;32;40m'
 RED = '\x1b[1;31;40m'
 END = '\x1b[0m'
 
+# string outputs used in printing
+header = "| Transaction Type| Balance"
+spacer = "+-----------------+------------------+----------------+----------+"
+spacer_ext = "---------+---------+"
+pcredit = "| " + GRN + "Credit" + END + ": {:7.2f} | \
+Balance: {:7.2f} | Total: {:7.2f} | {:3} | {:7.2f} | {:7.2f} |"
+pdebit = "| " + RED + "Debit" + END + ": {:8.2f} | \
+Balance: {:7.2f} | Total: {:7.2f} | {:3} | {:7.2f} |         |"
+
+
 # simple data structure: Transaction
-tx = namedtuple('Transaction', ['balance'])
-header = True
-balance = True
-txn = 1
-
-# load data from csv and transform to json
-csvfile = open('transactions.csv', 'r')
-jsonfile = open('transactions.json', 'w')
-
+transaction = namedlist('Transaction', 'balance')
 fields = (
     "Account",
     "ChkRef",
@@ -40,25 +49,86 @@ fields = (
     "Credit",
     "Balance",
     "Date",
-    "Description")
+    "Description"
+    )
+# We start at one to correct for the number of transactions 
+# placed on account offsetted by one to skip off-by-one errors
+transactions = 1
+# due to long transaction files print the header every 10-25 lines
+header_print = 0
+# load data from csv and transform to json
+with open(sys.argv[1], 'r') as csvfile:
+    with open(sys.argv[2], 'w') as jsonfile:
+        monthly = 0
+        account = None
+        header_check = False
+        # loop through the csv line with given fields
+        reader = csv.DictReader(csvfile, fields)
+        for row in reader:
 
-# Parse the transactions data from csv file
-reader = csv.DictReader(csvfile, fields)
-read = False
-for row in reader:
-    json.dump(row, jsonfile)
-    jsonfile.write('\n')
-jsonfile.close()
-csvfile.close()
+            # write the info to json file
+            json.dump(row, jsonfile)
+            jsonfile.write('\n')
 
-# string outputs used in printing
-spacer = "+-----------------+------------------+----------------+-----+"
-credit = "| " + GRN + "Credit" + END + ": {:7.2f} |\
-        Balance: {:7.2f} | Total: {:7.2f} | {:3} | {} | {:7.2f}"
-debit = "| " + RED + "Debit" + END + ": {:8.2f} |\
-        Balance: {:7.2f} | Total: {:7.2f} | {:3} | {}"
+            # write the info to terminal 
+            # header check skips first line
+            # of csv that contains header
+            if not header_check:
+                header_check = True
+            else:
+                if not account:
+                    account = transaction(float(row['Balance']))
+                    print('Start: {}'.format(account.balance))
+                transactions += 1
+                print(spacer+spacer_ext)
+                
+                # checks if balance exists
+                balance = row['Balance']
+                if balance == "":
+                    balance = account.balance
+                else:
+                    balance = float(balance)
 
-# loop through transactions
+                credit = row['Credit']
+                debit = row['Debit']
+
+                # string formatting and correcting for valid dates during print
+                txdate = tuple(map(lambda x: int(x), row['Date'].split('/')))
+                txdate = date(
+                        year = txdate[2],
+                        month = txdate[0],
+                        day = txdate[1]).strftime("%m/%d/%y")
+
+                if credit is not "":
+                    credit = float(credit)
+                    print(pcredit.format(
+                        credit,
+                        balance,
+                        balance - credit,
+                        txdate,
+                        account.balance,
+                        monthly))
+                    account.balance -= credit
+                    # credit transactions means two weeks
+                    # so reset monthly calculations every
+                    # two weeks
+                    monthly = 0.00
+
+                elif debit is not "":
+                    debit = float(debit)
+                    new_balance = balance + debit
+                    print(pdebit.format(
+                        debit,
+                        balance,
+                        balance + debit,
+                        txdate,
+                        monthly))
+                    account.balance += debit
+                    # accrue debit per two weeks
+                    monthly += debit
+        print(spacer+spacer_ext)
+
+exit("Done writing")
 with open('transactions.json', 'r') as transactions:
     line = transactions.readline()
     line = transactions.readline()
