@@ -16,7 +16,7 @@ import sys
 import os
 
 # debug variable
-debug = True
+debug = False
 
 # Used in time.sleep
 outputspeed = 1
@@ -162,3 +162,5 @@ def parseRSS(string):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         parseJSON(sys.argv[1])
+    else:
+        exit("Incorrect num args: links file unspecified")
