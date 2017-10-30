@@ -204,7 +204,6 @@ def main(argv):
                         # credit transactions means two weeks
                         # so reset monthly calculations every
                         # two weeks
-                        monthly = 0.00
 
                     # reading a debit transaction
                     elif debit is not "":
@@ -218,7 +217,6 @@ def main(argv):
                         transactions.append(new_row)
                         account.balance += float(debit)
                         # accrue debit per two weeks
-                        monthly += float(debit)
                         header_print += 1
 
             # print(spacer+spacer_ext)
@@ -239,28 +237,47 @@ def main(argv):
     p_months_in = "| Monthly Income {:2}                   | {:7.2f} |"
     p_months_out = "| Monthly Expenses {:2}                 | {:7.2f} |"
     p_months_avg = "| Monthly Average                     | {:7.2f} |"
+    p_monthly_avgs_low = "| Monthly Average                     \
+|"+GRN+" {:7.2f} "+END+"|"
+    p_monthly_avgs_high = "| Monthly Average                     \
+|"+RED+" {:7.2f} "+END+"|"
+    p_monthly_gain = "| Monthly Gain                        |"+GRN+"{:8.2f}"+END+" |"
+    p_monthly_loss = "| Monthly Loss                        |"+RED+"{:8.2f}"+END+" |"
 
     # print initial headers
     print(spacer)
     print(header)
     print(spacer)
-    
+
     # iterate through the rowsi and caluclate monthly costs and averages
     for num, row in enumerate(reversed(transactions)):
+
         if valid_date(row['Date']): 
             month = row['Date'].split('/')[0]
+
             if month != current_month:
                 need_to_print = monthly_income > 0.0 or monthly_usage > 0.0
+
                 if need_to_print:
                     print(spacer)
                     if monthly_income > 0.0:
                         print(p_months_in.format(current_month, monthly_income))
                         if monthly_usage > 0.0:
                             monthly_average.append(monthly_usage)
+
                     if monthly_usage > 0.0:
                         print(p_months_out.format(current_month, monthly_usage))
 
+                    if monthly_income > monthly_usage:
+                        print(p_monthly_gain.format(
+                            monthly_income - monthly_usage))
+                    else:
+                        print(p_monthly_loss.format(
+                            monthly_income - monthly_usage))
+
                     # reprint header information
+                    print(spacer)
+                    print()
                     print(spacer)
                     print(header)
                     print(spacer)
@@ -294,12 +311,38 @@ def main(argv):
                         row['New']))
 
     # final calculations after iterating through rows
+    need_to_print = monthly_income > 0.0 or monthly_usage > 0.0
+
+    if need_to_print:
+        print(spacer)
+        if monthly_income > 0.0:
+            print(p_months_in.format(current_month, monthly_income))
+            if monthly_usage > 0.0:
+                monthly_average.append(monthly_usage)
+
+        if monthly_usage > 0.0:
+            print(p_months_out.format(current_month, monthly_usage))
+
+        if monthly_income > monthly_usage:
+            print(p_monthly_gain.format(
+                monthly_income - monthly_usage))
+        else:
+            print(p_monthly_loss.format(
+                monthly_income - monthly_usage))
+        print(spacer)
+        print()
+
     if monthly_usage > 0.0:
         monthly_average.append(monthly_usage)
+
     print(spacer)
-    print(p_months_in.format(month, monthly_income))
-    print(p_months_out.format(month, monthly_usage))
-    print(p_months_avg.format(sum(monthly_average)/len(monthly_average)))
+    print("| {:45} |".format("Statistics from selected months"))
+    print(spacer)
+    average = sum(monthly_average) / len(monthly_average)
+    if average < 1500:
+        print(p_monthly_avgs_low.format(average))
+    else:
+        print(p_monthly_avgs_high.format(average))
     print(final.format(row['New']))
     print(spacer)
     exit("Finished")
