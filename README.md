@@ -3,6 +3,7 @@ A collection of small scripts I have frequently used or use, written in Bash, Py
 
 ## Accounts
 salary  : Calculates Cost of Living for my current salary as well as future salary expectations
+
 accounts: Reads in a 'transactions.csv' file from bank account and parses debit and credit transactions
 
 ## Calculator
