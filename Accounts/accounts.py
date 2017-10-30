@@ -68,12 +68,6 @@ def main(argv):
     RED = '\x1b[1;31;40m'
     END = '\x1b[0m'
 
-    # string outputs used in printing
-    header = "  Num  |   Date   |   Transaction   |     Balance      | Total |"
-    header_ext = " Balance | Monthly |"
-    spacer = "+-----------------+------------------+----------------+----------+"
-    spacer_ext = "---------+---------+"
-    
     # simple data structure: Transaction
     transaction = namedlist('Transaction', 'balance')
     fields = (
@@ -113,16 +107,23 @@ def main(argv):
     # valid dates: parse and error check
     if not (debit or credit):
         raise ValueError("To output both debit and credit -- omit c & d")
+    
     if start != date(2015, 10, 27):
         start = parse_date(start)
     elif verbose:
         print("Start date not entered -- using last entry in file as start")
+    
     if end != date.today():
         end = parse_date(end)
     elif verbose:
         print("End date not entered   -- using today's date")
+    
+    if start > end:
+        raise ValueError("Start date is more recent than End date")
+
     if not file_in.endswith("csv"): 
         raise ValueError("Input file has wrong extension type: need csv")
+    
     if not file_out.endswith("json"):
         raise ValueError("Output file has wrong extension type: need json")
     
@@ -233,16 +234,14 @@ def main(argv):
     pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
     header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
     spacer =  "+------+----------+---------+---------+---------+"
-    final =  "| Current Bank Balance                | {:7.2f} |"
-    p_months_in = "| Monthly Income {:2}                   | {:7.2f} |"
-    p_months_out = "| Monthly Expenses {:2}                 | {:7.2f} |"
-    p_months_avg = "| Monthly Average                     | {:7.2f} |"
-    p_monthly_avgs_low = "| Monthly Average                     \
-|"+GRN+" {:7.2f} "+END+"|"
-    p_monthly_avgs_high = "| Monthly Average                     \
-|"+RED+" {:7.2f} "+END+"|"
-    p_monthly_gain = "| Monthly Gain                        |"+GRN+"{:8.2f}"+END+" |"
-    p_monthly_loss = "| Monthly Loss                        |"+RED+"{:8.2f}"+END+" |"
+    final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
+    p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
+    p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
+    p_months_avg = "| {:35} |".format("Monthly Average") + " {:7.2f} |"
+    p_monthly_avgs_low = "| {:35} |".format("Monthly Avg") + GRN + " {:7.2f} " + END + "|"
+    p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
+    p_monthly_gain = "| {:35} |".format("Monthly Gain") + GRN + "{:8.2f}" + END + " |"
+    p_monthly_loss = "| {:35} |".format("Monthly Loss") + RED + "{:8.2f}" + END + " |"
 
     # print initial headers
     print(spacer)
