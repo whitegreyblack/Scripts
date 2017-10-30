@@ -1,3 +1,11 @@
+#!/bin/env python
+'''
+Author: Sam Whang
+File  : googlefeed.py
+Usage : py googlefeed.py <googlelinks.txt>
+Info  : A Google News RSS Feed watcher that consumes newly pushed rss data
+        from a list of provided Google News rss urls
+'''
 from collections import namedtuple
 import lxml.etree
 import requests

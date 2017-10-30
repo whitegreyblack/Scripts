@@ -1,3 +1,11 @@
+#!/bin/env python
+'''
+Author: Sam Whang
+File  : redditfeed.py
+Usage : py redditfeed.py <redditlinks.txt>
+Info  : A Reddit RSS Feed watcher that consumes newly pushed rss data from a 
+        list of provided reddit subreddit urls
+'''
 from collections import namedtuple
 import lxml.etree
 import requests
