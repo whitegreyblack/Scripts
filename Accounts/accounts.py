@@ -121,10 +121,14 @@ def main(argv):
     if start > end:
         raise ValueError("Start date is more recent than End date")
 
-    if not file_in.endswith("csv"): 
+    if file_in == "":
+        raise ValueError("No input file has been specified")
+    elif not file_in.endswith("csv"): 
         raise ValueError("Input file has wrong extension type: need csv")
     
-    if not file_out.endswith("json"):
+    if file_out == "":
+        raise ValueError("No output file has been specified")
+    elif not file_out.endswith("json"):
         raise ValueError("Output file has wrong extension type: need json")
     
     if verbose:
