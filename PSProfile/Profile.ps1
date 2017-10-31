@@ -1,6 +1,7 @@
 # ===
 # PowerShell Profile Prompt Settings
 # Sam Whang | WGB
+# Based off of these online solutions below
 # ---
 # https://stackoverflow.com/questions/1287718/how-can-i-display-my-current-git-\
 # branch-name-in-my-powershell-prompt
@@ -34,7 +35,6 @@ function prompt {
     $userPrompt = "$('> $' * ($nestedPromptLevel + 1)) "
 
     #Write-Host "`n$base" -NoNewline
-
     if (Test-Path .git) {
         Write-Host $path -NoNewline -ForegroundColor "darkcyan"
         Write-BranchName
