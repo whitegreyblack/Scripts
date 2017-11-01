@@ -31,24 +31,25 @@ attributes=[
 
 # helper functions for nested empty tuples
 def flatten(x):
-    return list(filter(lambda x: x != " ", sum(map(flatten, x), []) if isinstance(x, tuple) else [x]))
+    '''Returns a 1D list constructed from a tuple of nested tuples'''
+    return list(filter(
+        lambda x: x != " ", sum(map(flatten, x), []) if isinstance(x, tuple) else [x]))
 
 def empty(x):
-    return all(t == '' for t in x)
+    '''Returns a newline delimited string if the input list has no spaces'''
+    return ("\n"+ " " * 22).join(x) if not all(t == '' for t in x) else ""
 
 if __name__ == "__main__":
     for attr in attributes:
         if hasattr(platform, attr):
             details = getattr(platform, attr)()
+
+            # Check for uname_result -- only case in which attribute is not of type tuple
             if isinstance(details, platform.uname_result):
                 details = ('\n' + " " * 22).join(['{:10} = {}'.format(k, getattr(details, k)) 
                     for k in details._fields])
             else:
-                details = flatten(details)
-                if empty(details):
-                    details = ""
-                else:
-                    details = ("\n" + " " * 22).join(details)
+                details = empty(flatten(details))
 
             print("{:20}: {:<}".format(
                 attr,
