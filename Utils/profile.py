@@ -31,4 +31,6 @@ attributes=[
 
 for attr in attributes:
     if hasattr(platform, attr):
-        print(attr+YEL+": "+str(getattr(platform, attr)())+END)
+        print("{:20}:{:<}".format(
+            attr,
+            YEL+": " + str(getattr(platform, attr)()) + END))
