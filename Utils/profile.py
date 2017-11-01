@@ -29,8 +29,27 @@ attributes=[
         'uname',
         ]
 
-for attr in attributes:
-    if hasattr(platform, attr):
-        print("{:20}:{:<}".format(
-            attr,
-            YEL+": " + str(getattr(platform, attr)()) + END))
+# helper functions for nested empty tuples
+def flatten(x):
+    return list(filter(lambda x: x != " ", sum(map(flatten, x), []) if isinstance(x, tuple) else [x]))
+
+def empty(x):
+    return all(t == '' for t in x)
+
+if __name__ == "__main__":
+    for attr in attributes:
+        if hasattr(platform, attr):
+            details = getattr(platform, attr)()
+            if isinstance(details, platform.uname_result):
+                details = ('\n' + " " * 22).join(['{:10} = {}'.format(k, getattr(details, k)) 
+                    for k in details._fields])
+            else:
+                details = flatten(details)
+                if empty(details):
+                    details = ""
+                else:
+                    details = ("\n" + " " * 22).join(details)
+
+            print("{:20}: {:<}".format(
+                attr,
+                YEL+ details + END))
