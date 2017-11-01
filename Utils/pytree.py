@@ -17,35 +17,74 @@ def list_files(startpath):
     magenta='\x1b[1;31;40m'
     cyan='\x1b[1;36;40m'
     blue = '\x1b[1;34;40m'
-    # green
+    green = '\x1b[1;32;40m'
+    lightgreen = '\x1b[1;92;40m'
     lightcyan = '\x1b[1;96;40m'
+    red = '\x1b[1;31;40m'
+    lightred = '\x1b[1;91;40m'
     end ='\x1b[0m'
 
-    skip = ("__pycache__", "migrations", '.git')
+    skip_folders = ("__pycache__", "migrations", '.git')
+    skip_extensions = (".swp",)
+    skip_but_print = (".ini")
     exts = {
         'html': blue,
         'css': cyan, 
-        'py': lightyellow, 
-        'md': lightcyan,
+        'py': lightyellow,
+        'python': lightyellow,
+        'md': magenta,
+        'ps1': lightcyan,
+        'csv': green,
+        'cshtml': lightgreen,
+        'sh': blue,
+        'bash': blue,
+        'bat': blue,
+        'json': lightred,
+        'js': folder,
     }
+    
     for root, dirs, files in os.walk(startpath, topdown=True):
-        dirs[:] = [d for d in dirs if d not in skip]
+        dirs[:] = [d for d in dirs if d not in skip_folders]
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
 
-        if os.path.basename(root) not in skip:
-            # prints folder
-            print('{}{}{}/{}'.format(folder,indent, os.path.basename(root),end))
+        # print valid folders
+        if os.path.basename(root) not in skip_folders:
+            print('{}{}{}/{}'.format('',indent, os.path.basename(root),end))
             subindent = ' ' * 4 * (level + 1)
 
             # color codes file before print
             for f in files:
-                for ext in exts:
-                    if f.endswith(ext):
-                        print('{}{}{}{}'.format(exts[ext], subindent, f, end))
-                        break
+                color = stop = ''
+                if f.startswith('.'):
+                    # probably a configuration/encoded file
+                    pass
+
+                # knwon extensions
+                elif f.endswith(tuple(exts.keys())):
+                    try:
+                        color = exts[f.split('.')[-1]]
+                        stop = end
+                    except:
+                        pass
+
+                # try reading the first line of file for shebangs
                 else:
-                    print('{}{}'.format(subindent, f))
+                    try:
+                        with open(root+"\\"+f, 'r') as curr_file:
+                            shebang = curr_file.readline().split(' ')[-1].strip()i
+
+                            if shebang in exts.keys():
+                                color = exts[shebang]
+                                stop = end
+
+                            elif shebang.endswith(tuple(exts.keys())):
+                                color = exts[shebang.split('/')[-1]]
+                                stop = end
+                    # just print plain on error
+                    except:
+                        pass
+                print('{}{}{}{}'.format(color, subindent, f, stop))
 
 if __name__ == "__main__":
     list_files(os.getcwd())
