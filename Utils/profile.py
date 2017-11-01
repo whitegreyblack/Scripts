@@ -52,7 +52,7 @@ def output() -> None:
 
             # Check for uname_result -- only case in which attribute is not of type tuple
             if isinstance(details, platform.uname_result):
-                details = ('\n' + " " * 22).join(['{:10} = {}'.format(k, getattr(details, k)) 
+                details = ('\n' + " " * 22).join(['{:10}: {}'.format(k, getattr(details, k)) 
                     for k in details._fields])
             else:
                 details = empty(flatten(details))
