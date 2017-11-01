@@ -49,14 +49,14 @@ def parseJSON(filename):
     """
     urls = None
     if debug:
-        print("parse JSON")
+        print("Parsing JSON")
     try:
         with open(filename, 'r') as f:
             data = json.loads(f.read())
             schema = data["reddit"]["schema"]
             links = data["reddit"]["links"]
             urls = [schema.format(link["sub"]) for link in links]
-    except BaseException:
+    except KeyError:
         raise
         print("Incorrect Json Format")
     if urls:
@@ -69,7 +69,7 @@ def loopURLS(urls):
     DEF: Generates a while loop of fetching xml data to keep feed alive
     """
     if debug:
-        print("looping")
+        print("Looping")
     try:
         while 1:
             for url in urls:
@@ -148,7 +148,7 @@ def parseRSS(string):
 
             if postid not in posts.keys():
                 # add to the posts cache and reset variables
-                #print(label, postid, len(posts), [ids for ids in posts.keys()])
+                # print(label, postid, len(posts), [ids for ids in posts.keys()])
                 posts[postid] = post(title, urlink, label)
                 
                 # printing time -- uses textwrap to pretty print the post data

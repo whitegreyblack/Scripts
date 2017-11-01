@@ -50,7 +50,7 @@ def parseJSON(filename):
     """
     urls = None
     if debug:
-        print("parse JSON")
+        print("Parse JSON")
     try:
         with open(filename, 'r') as f:
             data = json.loads(f.read())
@@ -72,7 +72,7 @@ def loopURLS(urls):
     DEF: Generates a while loop of fetching xml data to keep feed alive
     """
     if debug:
-        print("looping")
+        print("Looping")
     try:
         while 1:
             for url in urls:
@@ -120,57 +120,7 @@ def parseRSS(string):
         print(string)
         print("Invalid XML format")
         return
-    '''
-    for child in tree:
-        # header information
-        if "id" in child.tag:
-            urlid = child.text
-        if "category" in child.tag:
-            label = child.attrib["label"]
-        if "updated" in child.tag:
-            update = child.text
 
-        # check and update feed info -- should only happen once every parse
-        # if update is the same as parsed code then no changes and exit
-        if urlid and update:
-            if urlid in feeds.keys():
-                if feeds[urlid] == update:
-                    return
-            feeds[urlid] = update
-            urlid, update = None, None
-
-        # entry post information
-        if "entry" in child.tag:
-            for subchild in child:
-                if "title" in subchild.tag:
-                    title = subchild.text
-                if "id" in subchild.tag:
-                    postid = subchild.text
-                if "link" in subchild.tag:
-                    urlink = subchild.attrib['href']
-
-            if postid not in posts.keys():
-                # add to the posts cache and reset variables
-                print(label, postid, len(posts), [ids for ids in posts.keys()])
-                posts[postid] = post(title, urlink, label)
-
-                # printing time -- uses textwrap to pretty print the post data
-                printer.append(posts[postid])
-
-                title, postid, urlink = None, None, None
-
-                time.sleep(outputspeed)
-    '''
-    """
-    RSS V2.0:
-        channel { generator | title | link | language | copyright | pubdate | lastbuilddate }
-        item { title | link | category | pubdate | descrption }
-        title == title
-        pubdate == dtime but in different format
-        link == urlink
-        category == label just different name
-        no
-    """
     title = None
     dtime = None
     build = None
@@ -194,12 +144,13 @@ def parseRSS(string):
                             urlink = attr.text
                         if "category" in attr.tag:
                             label = attr.text
+
+                    # output title header and subject matter
                     print(textwrap.fill(format(" " + YEL + title + END + " [" + label + "]"),
-                                        width=int(columns)-2,
-                                        subsequent_indent=' '))
+                                        width = int(columns) - 2,
+                                        subsequent_indent = ' '))
                     print(" " + DIM + urlink[:int(columns):] + END)
                     time.sleep(outputspeed)
-    #print(urlid, dtime, build)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
