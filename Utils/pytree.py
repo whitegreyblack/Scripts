@@ -4,7 +4,7 @@ __license__ = "MIT"
 
 import os
 
-def list_files(startpath):
+def list_files(startpath: str) -> None:
     '''
     walks through directory with os.walk and lists directories 
     and files with given extensions
@@ -72,7 +72,7 @@ def list_files(startpath):
                 else:
                     try:
                         with open(root+"\\"+f, 'r') as curr_file:
-                            shebang = curr_file.readline().split(' ')[-1].strip()i
+                            shebang = curr_file.readline().split(' ')[-1].strip()
 
                             if shebang in exts.keys():
                                 color = exts[shebang]

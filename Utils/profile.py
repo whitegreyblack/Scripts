@@ -1,8 +1,13 @@
+#!/usr/bin/env python
+
 import platform
+'Color coded tree function written in python'
 
 __author__  = "Sam WHang | WGB"
 __email__   = "sangwoowhang@gmail.com"
 __license__ = "MIT"
+
+from typing import Sequence
 
 # Print color formatting
 ORG = '\x1b[0;34;40m'
@@ -30,16 +35,17 @@ attributes=[
         ]
 
 # helper functions for nested empty tuples
-def flatten(x):
+def flatten(x: tuple) -> list:
     '''Returns a 1D list constructed from a tuple of nested tuples'''
     return list(filter(
         lambda x: x != " ", sum(map(flatten, x), []) if isinstance(x, tuple) else [x]))
 
-def empty(x):
+def empty(x: Sequence) -> str:
     '''Returns a newline delimited string if the input list has no spaces'''
     return ("\n"+ " " * 22).join(x) if not all(t == '' for t in x) else ""
 
-if __name__ == "__main__":
+def output() -> None:
+    '''Prints out the folder/file name with proper indentation representing node depth'''
     for attr in attributes:
         if hasattr(platform, attr):
             details = getattr(platform, attr)()
@@ -54,3 +60,6 @@ if __name__ == "__main__":
             print("{:20}: {:<}".format(
                 attr,
                 YEL+ details + END))
+
+if __name__ == "__main__":
+    output()
