@@ -20,6 +20,7 @@ import sys
 # TODO: 
 # Choose credit and/or debit
 # Single input/output file, uses respective file input name as both in/out files
+# Json is currently not writing new values to file -- fix soon
 
 usage = """
 accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
@@ -27,9 +28,9 @@ accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
     -d, -c : print either debit or credit statements, not both
 """[1:]
     
-
-
 def main(argv):
+    '''transforms csv transaction data into json for formatted printing'''
+
     def parse_date(ddate):
         """Error checking for input dates"""
         if "/" in ddate:
@@ -60,11 +61,36 @@ def main(argv):
         """Date parsing used in final output date checking"""
         ddate = tuple(map(lambda x: int(x), ddate.split("/")))
         ddate = date(
-            year = 2000+ddate[2],
+            year = 2000 + ddate[2],
             month = ddate[0],
             day = ddate[1]
         )
         return start <= ddate <= end
+
+    def monthly_stats(month, income, usage):
+        '''Terminal output print if income and usage exists'''
+        if income > 0.0 or usage > 0.0:
+            print(spacer)
+            
+            if income > 0.0:
+                print(p_months_in.format(
+                    transactions_in, income))
+
+            if usage > 0.0:
+                print(p_months_out.format(
+                    transactions_out, usage))
+
+            net_total = income - usage
+
+            if income > usage:
+                print(p_monthly_gain.format(month, net_total))
+            else:
+                print(p_monthly_loss.format(month, net_total))
+
+            print(spacer)
+            print()
+
+            monthly_average.append(net_total)
 
     # Internal variables
     file_in = ""
@@ -73,16 +99,6 @@ def main(argv):
     credit = True
     verbose = False
     date_format = "%m/%d/%y"
-
-    # Start/End used in date checking when specific dates are 
-    # entered through command line
-    start = date(2015, 10, 27)
-    end = date.today()
-
-    # Color format printing
-    GRN = '\x1b[1;32;40m'
-    RED = '\x1b[1;31;40m'
-    END = '\x1b[0m'
 
     # simple data structure: Transaction
     transaction = namedlist('Transaction', 'balance')
@@ -95,6 +111,38 @@ def main(argv):
         "Date",
         "Description"
         )
+
+    # Start/End used in date checking when specific dates are 
+    # entered through command line
+    start = date(2015, 10, 27)
+    end = date.today()
+
+    # variables used in printouts
+    current_month = None
+    monthly_income = 0
+    transactions_in = 0
+    monthly_usage = 0
+    transactions_out = 0
+    monthly_average = []
+
+    # Color format printing
+    GRN = '\x1b[1;32;40m'
+    RED = '\x1b[1;31;40m'
+    END = '\x1b[0m'
+
+    # strings for printing
+    pcredit = "| {:4} | {:3} | {:7.2f} | "+GRN+"{:7.2f}"+END+" | {:7.2f} |"
+    pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
+    header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
+    spacer =  "+------+----------+---------+---------+---------+"
+    final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
+    p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
+    p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
+    p_months_avg = "| {:35} |".format("Monthly Average") + " {:7.2f} |"
+    p_monthly_avgs_low = "| {:35} |".format("Monthly Avg") + GRN + " {:7.2f} " + END + "|"
+    p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
+    p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
+    p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
 
     # args parsing
     try:
@@ -126,14 +174,14 @@ def main(argv):
         raise ValueError("To output both debit and credit -- omit c & d")
     
     if start != date(2015, 10, 27):
+        if verbose:
+            print("Start date not entered -- using last entry in file as start")
         start = parse_date(start)
-    elif verbose:
-        print("Start date not entered -- using last entry in file as start")
-    
+
     if end != date.today():
+        if verbose:
+            print("End date not entered   -- using today's date")
         end = parse_date(end)
-    elif verbose:
-        print("End date not entered   -- using today's date")
     
     if start > end:
         raise ValueError("Start date is more recent than End date")
@@ -161,16 +209,13 @@ def main(argv):
     # due to long transaction files print the header every time
     # number of debit followed by credit is longer than 15
     header_print = 0
-
     transactions = []
     
-    # load data from csv and transform to json
     # we have to read twice since the order we want is not in the
     # correct order and reading backwards leaves open spaces in
     # the transaction history due to removal of data from history loss
     # so read from latest to earliest history to fill empty cells and 
     # then print from earliest to latest using calculated data
-
     with open(file_in, 'r') as csvfile, open(file_out, 'w') as jsonfile:
         account = None
         header_check = False
@@ -244,59 +289,22 @@ def main(argv):
         print("Total Transactions Read Processed: {}".format(
             transaction_number))
 
-    # read the file in reverse now to find out monthly income and expenses
-    month = None
-    current_month = None
-    monthly_income = 0
-    monthly_usage = 0
-    monthly_average = []
-    pcredit = "| {:4} | {:3} | {:7.2f} | "+GRN+"{:7.2f}"+END+" | {:7.2f} |"
-    pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
-    header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
-    spacer =  "+------+----------+---------+---------+---------+"
-    final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
-    p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
-    p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
-    p_months_avg = "| {:35} |".format("Monthly Average") + " {:7.2f} |"
-    p_monthly_avgs_low = "| {:35} |".format("Monthly Avg") + GRN + " {:7.2f} " + END + "|"
-    p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
-    p_monthly_gain = "| {:35} |".format("Monthly Gain") + GRN + "{:8.2f}" + END + " |"
-    p_monthly_loss = "| {:35} |".format("Monthly Loss") + RED + "{:8.2f}" + END + " |"
-
-    # print initial headers
+    # print header information
     print(spacer)
     print(header)
     print(spacer)
 
-    # iterate through the rowsi and caluclate monthly costs and averages
-    for num, row in enumerate(reversed(transactions)):
-
+    # read the file in reverse now to find out monthly income and expenses
+    # iterate through the rows and calculate monthly costs and averages
+    for transact_num, row in enumerate(reversed(transactions)):
         if valid_date(row['Date']): 
-            month = row['Date'].split('/')[0]
-
+            month = parse_date(row['Date']).month
             if month != current_month:
-                need_to_print = monthly_income > 0.0 or monthly_usage > 0.0
+                # we can skip printing if we do not detect any changes in 
+                # balance during the month
+                monthly_stats(current_month, monthly_income, monthly_usage)
 
-                if need_to_print:
-                    print(spacer)
-                    if monthly_income > 0.0:
-                        print(p_months_in.format(current_month, monthly_income))
-                        if monthly_usage > 0.0:
-                            monthly_average.append(monthly_usage)
-
-                    if monthly_usage > 0.0:
-                        print(p_months_out.format(current_month, monthly_usage))
-
-                    if monthly_income > monthly_usage:
-                        print(p_monthly_gain.format(
-                            monthly_income - monthly_usage))
-                    else:
-                        print(p_monthly_loss.format(
-                            monthly_income - monthly_usage))
-
-                    # reprint header information
-                    print(spacer)
-                    print()
+                if monthly_income > 0.0 or monthly_usage > 0.0:
                     print(spacer)
                     print(header)
                     print(spacer)
@@ -305,63 +313,46 @@ def main(argv):
                 current_month = month
                 monthly_income = 0
                 monthly_usage = 0
+                transactions_in = 0
+                transactions_out = 0
 
-            if row['Type'].lower() == "credit":
+            # Dont include service fees that equals less than 1 dollar
+            if row['Amount'] < 1.00:
+                pass
+
+            elif row['Type'].lower() == "credit":
                 monthly_income += row['Amount']
+                transactions_in += 1
                 print(pcredit.format(
-                    num,
+                    transact_num,
                     row['Date'],
                     row['Prev'],
                     row['Amount'],
                     row['New']))
 
             else:
-                # Dont include service fees that equals less than 1 dollar
-                if row['Amount'] < 1.00:
-                    pass
+                monthly_usage += row['Amount']
+                transactions_out += 1
+                print(pdebit.format(
+                    transact_num,
+                    row["Date"],
+                    row['Prev'],
+                    row['Amount'],
+                    row['New']))
 
-                else:
-                    monthly_usage += row['Amount']
-                    print(pdebit.format(
-                        num,
-                        row["Date"],
-                        row['Prev'],
-                        row['Amount'],
-                        row['New']))
-
-    # final calculations after iterating through rows
-    need_to_print = monthly_income > 0.0 or monthly_usage > 0.0
-
-    if need_to_print:
-        print(spacer)
-        if monthly_income > 0.0:
-            print(p_months_in.format(current_month, monthly_income))
-            if monthly_usage > 0.0:
-                monthly_average.append(monthly_usage)
-
-        if monthly_usage > 0.0:
-            print(p_months_out.format(current_month, monthly_usage))
-
-        if monthly_income > monthly_usage:
-            print(p_monthly_gain.format(
-                monthly_income - monthly_usage))
-        else:
-            print(p_monthly_loss.format(
-                monthly_income - monthly_usage))
-        print(spacer)
-        print()
-
-    if monthly_usage > 0.0:
-        monthly_average.append(monthly_usage)
+    monthly_stats(current_month, monthly_income, monthly_usage)
 
     print(spacer)
     print("| {:45} |".format("Statistics from selected months"))
     print(spacer)
-    average = sum(monthly_average) / len(monthly_average)
-    if average < 1500:
-        print(p_monthly_avgs_low.format(average))
-    else:
-        print(p_monthly_avgs_high.format(average))
+
+    if monthly_average:
+        average = sum(monthly_average) / len(monthly_average)
+        if average > 0.0:
+            print(p_monthly_avgs_low.format(average))
+        else:
+            print(p_monthly_avgs_high.format(average))
+
     print(final.format(row['New']))
     print(spacer)
     exit("Finished")
