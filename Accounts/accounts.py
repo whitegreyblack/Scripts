@@ -5,6 +5,7 @@ File  : accounts.py
 Usage : py accounts.py
 Info  : calculates debit and credit transactions using a csv file
         and prints remainder in every transaction line printed
+Cmd   : python Accounts/accounts.py  -i Accounts/transact-17-10-30.csv -o Accounts/transact.json
 '''
 
 from collections import namedtuple
@@ -15,6 +16,10 @@ import getopt
 import json
 import csv
 import sys
+
+# TODO: 
+# Choose credit and/or debit
+# Single input/output file, uses respective file input name as both in/out files
 
 usage = """
 accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
@@ -33,33 +38,44 @@ def main(argv):
             ddate = ddate.split("-")
         else:
             raise ValueError("Date contains invalid seperator")
+
         try:
             ddate = tuple(map(lambda x: int(x), ddate))
         except ValueError:
             raise ValueError("Date contains invalid variables types")
+
         if len(ddate) != 3:
             raise ValueError("Date contains invalid number of variables")
-        ddate = date(year = ddate[2],
-                    month = ddate[0],
-                    day = ddate[1])
+
+        # All errors have been safely checked -- now create a valid date object
+        ddate = date(
+            year = ddate[2], 
+            month = ddate[0],
+            day = ddate[1]
+        )
+
         return ddate
 
     def valid_date(ddate):
         """Date parsing used in final output date checking"""
         ddate = tuple(map(lambda x: int(x), ddate.split("/")))
-        ddate = date(year = 2000+ddate[2],
-                    month = ddate[0],
-                    day = ddate[1])
+        ddate = date(
+            year = 2000+ddate[2],
+            month = ddate[0],
+            day = ddate[1]
+        )
         return start <= ddate <= end
 
     # Internal variables
     file_in = ""
     file_out = ""
-    # TODO -- Choices for debit/credit
     debit = True
     credit = True
     verbose = False
     date_format = "%m/%d/%y"
+
+    # Start/End used in date checking when specific dates are 
+    # entered through command line
     start = date(2015, 10, 27)
     end = date.today()
 
@@ -154,79 +170,78 @@ def main(argv):
     # so read from latest to earliest history to fill empty cells and 
     # then print from earliest to latest using calculated data
 
-    with open(file_in, 'r') as csvfile:
-        with open(file_out, 'w') as jsonfile:
-            account = None
-            header_check = False
+    with open(file_in, 'r') as csvfile, open(file_out, 'w') as jsonfile:
+        account = None
+        header_check = False
 
-            # loop through the csv line with given fields
-            reader = csv.DictReader(csvfile, fields)
+        # loop through the csv line with given fields
+        reader = csv.DictReader(csvfile, fields)
 
-            # iterate through the csv file
-            for row in reader:
-                if not header_check:
-                    header_check = True
+        # iterate through the csv file
+        for row in reader:
+            if not header_check:
+                header_check = True
+            else:
+                    # write the info to json file
+                json.dump(row, jsonfile)
+                jsonfile.write('\n')
+
+                if not account:
+                    account = transaction(float(row['Balance']))
+                transaction_number += 1
+
+                # checks if balance exists
+                balance = row['Balance']
+                if balance == "":
+                    balance = account.balance
                 else:
-                     # write the info to json file
-                    json.dump(row, jsonfile)
-                    jsonfile.write('\n')
+                    balance = float(balance)
 
-                    if not account:
-                        account = transaction(float(row['Balance']))
-                    transaction_number += 1
+                credit = row['Credit']
+                debit = row['Debit']
 
-                    # checks if balance exists
-                    balance = row['Balance']
-                    if balance == "":
-                        balance = account.balance
-                    else:
-                        balance = float(balance)
+                # string formatting and correcting for valid dates 
+                # during print to terminal
+                txdate = tuple(map(
+                                lambda x: int(x), 
+                                row['Date'].split('/')))
+                txdate = date(
+                        year = txdate[2],
+                        month = txdate[0],
+                        day = txdate[1]).strftime("%m/%d/%y")
 
-                    credit = row['Credit']
-                    debit = row['Debit']
+                # reading a credit transaction
+                if credit is not "":
+                    new_row = {}
+                    new_row['Type'] = "credit"
+                    new_row['Amount'] = float(credit)
+                    new_row['Prev'] = balance - float(credit)
+                    new_row['Change'] = balance
+                    new_row['Date'] = txdate
+                    new_row['New'] = account.balance
+                    transactions.append(new_row)
+                    account.balance -= float(credit)
+                    # credit transactions means two weeks
+                    # so reset monthly calculations every
+                    # two weeks
 
-                    # string formatting and correcting for valid dates 
-                    # during print to terminal
-                    txdate = tuple(map(
-                                    lambda x: int(x), 
-                                    row['Date'].split('/')))
-                    txdate = date(
-                            year = txdate[2],
-                            month = txdate[0],
-                            day = txdate[1]).strftime("%m/%d/%y")
+                # reading a debit transaction
+                elif debit is not "":
+                    new_row = {}
+                    new_row['Type'] = "debit"
+                    new_row["Amount"] = float(debit)
+                    new_row["Prev"] = balance + float(debit)
+                    new_row["Change"] = balance + float(debit)
+                    new_row["Date"] = txdate
+                    new_row["New"] = account.balance
+                    transactions.append(new_row)
+                    account.balance += float(debit)
+                    # accrue debit per two weeks
+                    header_print += 1
 
-                    # reading a credit transaction
-                    if credit is not "":
-                        new_row = {}
-                        new_row['Type'] = "credit"
-                        new_row['Amount'] = float(credit)
-                        new_row['Prev'] = balance - float(credit)
-                        new_row['Change'] = balance
-                        new_row['Date'] = txdate
-                        new_row['New'] = account.balance
-                        transactions.append(new_row)
-                        account.balance -= float(credit)
-                        # credit transactions means two weeks
-                        # so reset monthly calculations every
-                        # two weeks
-
-                    # reading a debit transaction
-                    elif debit is not "":
-                        new_row = {}
-                        new_row['Type'] = "debit"
-                        new_row["Amount"] = float(debit)
-                        new_row["Prev"] = balance + float(debit)
-                        new_row["Change"] = balance + float(debit)
-                        new_row["Date"] = txdate
-                        new_row["New"] = account.balance
-                        transactions.append(new_row)
-                        account.balance += float(debit)
-                        # accrue debit per two weeks
-                        header_print += 1
-
-            # print(spacer+spacer_ext)
-            print("Total Transactions Read Processed: {}".format(
-                transaction_number))
+        # print(spacer+spacer_ext)
+        print("Total Transactions Read Processed: {}".format(
+            transaction_number))
 
     # read the file in reverse now to find out monthly income and expenses
     month = None
