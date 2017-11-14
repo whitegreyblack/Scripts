@@ -101,6 +101,7 @@ def main(argv):
         opts, args = getopt.getopt(argv, "cdhve:i:o:s:", ["fin=", "fout="])
     except getopt.GetoptError:
         exit(usage)
+        
     for opt, arg in opts:
         if opt == "-h":
             exit(usage)
