@@ -93,3 +93,6 @@ ENV/
 
 # Json Files in Accounts
 *.json
+
+# DB files created by sqlite3
+.db
