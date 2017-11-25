@@ -65,6 +65,7 @@ def main(argv):
             month = ddate[0],
             day = ddate[1]
         )
+
         return start <= ddate <= end
 
     def monthly_stats(month, income, usage):
@@ -176,11 +177,13 @@ def main(argv):
     if start != date(2015, 10, 27):
         if verbose:
             print("Start date not entered -- using last entry in file as start")
+        
         start = parse_date(start)
 
     if end != date.today():
         if verbose:
             print("End date not entered   -- using today's date")
+        
         end = parse_date(end)
     
     if start > end:
@@ -297,8 +300,11 @@ def main(argv):
     # read the file in reverse now to find out monthly income and expenses
     # iterate through the rows and calculate monthly costs and averages
     for transact_num, row in enumerate(reversed(transactions)):
+        
+        # check for valid dates and parse if true
         if valid_date(row['Date']): 
             month = parse_date(row['Date']).month
+            
             if month != current_month:
                 # we can skip printing if we do not detect any changes in 
                 # balance during the month
