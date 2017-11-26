@@ -17,7 +17,7 @@ import json
 import csv
 import sys
 
-# TODO: 
+# TODO:
 # Choose credit and/or debit
 # Single input/output file, uses respective file input name as both in/out files
 # Json is currently not writing new values to file -- fix soon
@@ -230,13 +230,15 @@ def main(argv):
         for row in reader:
             if not header_check:
                 header_check = True
+
             else:
-                    # write the info to json file
+                # write the info to json file
                 json.dump(row, jsonfile)
                 jsonfile.write('\n')
 
                 if not account:
                     account = transaction(float(row['Balance']))
+
                 transaction_number += 1
 
                 # checks if balance exists
@@ -251,13 +253,22 @@ def main(argv):
 
                 # string formatting and correcting for valid dates 
                 # during print to terminal
-                txdate = tuple(map(
-                                lambda x: int(x), 
-                                row['Date'].split('/')))
+                m, d, y = tuple(map(
+                                    lambda x: int(x), 
+                                    row['Date'].split('/')))
+
                 txdate = date(
-                        year = txdate[2],
-                        month = txdate[0],
-                        day = txdate[1]).strftime("%m/%d/%y")
+                            year = y,
+                            month = m,
+                            day = d).strftime("%m/%d/%y")
+                
+                # txdate = tuple(map(
+                #                 lambda x: int(x), 
+                #                 row['Date'].split('/')))
+                # txdate = date(
+                #         year = txdate[2],
+                #         month = txdate[0],
+                #         day = txdate[1]).strftime("%m/%d/%y")
 
                 # reading a credit transaction
                 if credit is not "":
@@ -296,6 +307,8 @@ def main(argv):
     print(spacer)
     print(header)
     print(spacer)
+
+    # TODO: write monthly budget information in json format
 
     # read the file in reverse now to find out monthly income and expenses
     # iterate through the rows and calculate monthly costs and averages
