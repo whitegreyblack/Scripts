@@ -28,6 +28,58 @@ accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
     -d, -c : print either debit or credit statements, not both
 """[1:]
     
+# Internal variables
+file_in = ""
+file_out = ""
+debit = True
+credit = True
+verbose = False
+date_format = "%m/%d/%y"
+
+# simple data structure: Transaction
+transaction = namedlist('Transaction', 'balance')
+fields = (
+    "Account",
+    "ChkRef",
+    "Debit",
+    "Credit",
+    "Balance",
+    "Date",
+    "Description"
+    )
+
+# Start/End used in date checking when specific dates are 
+# entered through command line
+start = date(2015, 10, 27)
+end = date.today()
+
+# variables used in printouts
+current_month = None
+monthly_income = 0
+transactions_in = 0
+monthly_usage = 0
+transactions_out = 0
+monthly_average = []
+
+# Color format printing
+GRN = '\x1b[1;32;40m'
+RED = '\x1b[1;31;40m'
+END = '\x1b[0m'
+
+# strings for printing
+pcredit = "| {:4} | {:3} | {:7.2f} | "+GRN+"{:7.2f}"+END+" | {:7.2f} |"
+pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
+header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
+spacer =  "+------+----------+---------+---------+---------+"
+final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
+p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
+p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
+p_months_avg = "| {:35} |".format("Monthly Average") + " {:7.2f} |"
+p_monthly_avgs_low = "| {:35} |".format("Monthly Avg") + GRN + " {:7.2f} " + END + "|"
+p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
+p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
+p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
+
 def main(argv):
     '''transforms csv transaction data into json for formatted printing'''
 
@@ -92,58 +144,6 @@ def main(argv):
             print()
 
             monthly_average.append(net_total)
-
-    # Internal variables
-    file_in = ""
-    file_out = ""
-    debit = True
-    credit = True
-    verbose = False
-    date_format = "%m/%d/%y"
-
-    # simple data structure: Transaction
-    transaction = namedlist('Transaction', 'balance')
-    fields = (
-        "Account",
-        "ChkRef",
-        "Debit",
-        "Credit",
-        "Balance",
-        "Date",
-        "Description"
-        )
-
-    # Start/End used in date checking when specific dates are 
-    # entered through command line
-    start = date(2015, 10, 27)
-    end = date.today()
-
-    # variables used in printouts
-    current_month = None
-    monthly_income = 0
-    transactions_in = 0
-    monthly_usage = 0
-    transactions_out = 0
-    monthly_average = []
-
-    # Color format printing
-    GRN = '\x1b[1;32;40m'
-    RED = '\x1b[1;31;40m'
-    END = '\x1b[0m'
-
-    # strings for printing
-    pcredit = "| {:4} | {:3} | {:7.2f} | "+GRN+"{:7.2f}"+END+" | {:7.2f} |"
-    pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
-    header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
-    spacer =  "+------+----------+---------+---------+---------+"
-    final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
-    p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
-    p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
-    p_months_avg = "| {:35} |".format("Monthly Average") + " {:7.2f} |"
-    p_monthly_avgs_low = "| {:35} |".format("Monthly Avg") + GRN + " {:7.2f} " + END + "|"
-    p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
-    p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
-    p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
 
     # args parsing
     try:
