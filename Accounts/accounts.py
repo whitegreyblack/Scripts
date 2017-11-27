@@ -22,66 +22,68 @@ import sys
 # Single input/output file, uses respective file input name as both in/out files
 # Json is currently not writing new values to file -- fix soon
 
-usage = """
-accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
-    -s, -e : date formats [MM/DD/YYYY], [MM-DD-YYYY] 
-    -d, -c : print either debit or credit statements, not both
-"""[1:]
-    
-# Internal variables
-file_in = ""
-file_out = ""
-debit = True
-credit = True
-verbose = False
-date_format = "%m/%d/%y"
-
-# simple data structure: Transaction
-transaction = namedlist('Transaction', 'balance')
-fields = (
-    "Account",
-    "ChkRef",
-    "Debit",
-    "Credit",
-    "Balance",
-    "Date",
-    "Description"
-    )
-
-# Start/End used in date checking when specific dates are 
-# entered through command line
-start = date(2015, 10, 27)
-end = date.today()
-
-# variables used in printouts
-current_month = None
-monthly_income = 0
-transactions_in = 0
-monthly_usage = 0
-transactions_out = 0
-monthly_average = []
-
-# Color format printing
-GRN = '\x1b[1;32;40m'
-RED = '\x1b[1;31;40m'
-END = '\x1b[0m'
-
-# strings for printing
-pcredit = "| {:4} | {:3} | {:7.2f} | "+GRN+"{:7.2f}"+END+" | {:7.2f} |"
-pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
-header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
-spacer =  "+------+----------+---------+---------+---------+"
-final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
-p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
-p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
-p_months_avg = "| {:35} |".format("Monthly Average") + " {:7.2f} |"
-p_monthly_avgs_low = "| {:35} |".format("Monthly Avg") + GRN + " {:7.2f} " + END + "|"
-p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
-p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
-p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
-
 def main(argv):
     '''transforms csv transaction data into json for formatted printing'''
+
+    usage = """
+    accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
+        -s, -e : date formats [MM/DD/YYYY], [MM-DD-YYYY] 
+        -d, -c : print either debit or credit statements, not both
+    """[1:]
+
+    fields = (
+        "Account",
+        "ChkRef",
+        "Debit",
+        "Credit",
+        "Balance",
+        "Date",
+        "Description"
+        )
+
+    translation_table = {
+
+    }
+
+    # Internal variables
+    file_in = ""
+    file_out = ""
+    debit = True
+    credit = True
+    verbose = False
+    date_format = "%m/%d/%y"
+
+    # Start/End used in date checking when specific dates are 
+    # entered through command line
+    start = date(2015, 10, 27)
+    end = date.today()
+
+    # variables used in printouts
+    current_month = None
+    monthly_income = 0
+    transactions_in = 0
+    monthly_usage = 0
+    transactions_out = 0
+    monthly_average = []
+
+    # Color format printing
+    GRN = '\x1b[1;32;40m'
+    RED = '\x1b[1;31;40m'
+    END = '\x1b[0m'
+
+    # strings for printing
+    pcredit = "| {:4} | {:3} | {:7.2f} | "+GRN+"{:7.2f}"+END+" | {:7.2f} |"
+    pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
+    header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
+    spacer =  "+------+----------+---------+---------+---------+"
+    final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
+    p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
+    p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
+    p_months_avg = "| {:35} |".format("Monthly Average") + " {:7.2f} |"
+    p_monthly_avgs_low = "| {:35} |".format("Monthly Avg") + GRN + " {:7.2f} " + END + "|"
+    p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
+    p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
+    p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
 
     def parse_date(ddate):
         """Error checking for input dates"""
@@ -233,18 +235,18 @@ def main(argv):
 
             else:
                 # write the info to json file
-                json.dump(row, jsonfile)
-                jsonfile.write('\n')
+                # json.dump(row, jsonfile)
+                # jsonfile.write('\n')
 
                 if not account:
-                    account = transaction(float(row['Balance']))
+                    account = float(row['Balance'])
 
                 transaction_number += 1
 
                 # checks if balance exists
                 balance = row['Balance']
                 if balance == "":
-                    balance = account.balance
+                    balance = account
                 else:
                     balance = float(balance)
 
@@ -253,52 +255,53 @@ def main(argv):
 
                 # string formatting and correcting for valid dates 
                 # during print to terminal
-                m, d, y = tuple(map(
-                                    lambda x: int(x), 
-                                    row['Date'].split('/')))
+                tm, td, ty = tuple(map(lambda x: int(x), row['Date'].split('/')))
 
                 txdate = date(
-                            year = y,
-                            month = m,
-                            day = d).strftime("%m/%d/%y")
-                
-                # txdate = tuple(map(
-                #                 lambda x: int(x), 
-                #                 row['Date'].split('/')))
-                # txdate = date(
-                #         year = txdate[2],
-                #         month = txdate[0],
-                #         day = txdate[1]).strftime("%m/%d/%y")
+                            year = ty,
+                            month = tm,
+                            day = td).strftime(date_format)
+
+                new_row = {}
 
                 # reading a credit transaction
                 if credit is not "":
-                    new_row = {}
+                    credit = float(credit)
+                    # new_row = {}
                     new_row['Type'] = "credit"
-                    new_row['Amount'] = float(credit)
-                    new_row['Prev'] = balance - float(credit)
+                    new_row['Amount'] = credit
+                    new_row['Prev'] = balance - credit
                     new_row['Change'] = balance
-                    new_row['Date'] = txdate
-                    new_row['New'] = account.balance
-                    transactions.append(new_row)
-                    account.balance -= float(credit)
+                    # new_row['Date'] = txdate
+                    # new_row['New'] = account
+                    account -= credit
                     # credit transactions means two weeks
                     # so reset monthly calculations every
                     # two weeks
 
                 # reading a debit transaction
                 elif debit is not "":
-                    new_row = {}
+                    debit = float(debit)
+                    # new_row = {}
                     new_row['Type'] = "debit"
-                    new_row["Amount"] = float(debit)
-                    new_row["Prev"] = balance + float(debit)
-                    new_row["Change"] = balance + float(debit)
-                    new_row["Date"] = txdate
-                    new_row["New"] = account.balance
-                    transactions.append(new_row)
-                    account.balance += float(debit)
+                    new_row["Amount"] = debit
+                    new_row["Prev"] = balance + debit
+                    new_row["Change"] = balance + debit
+                    # new_row["Date"] = txdate
+                    # new_row["New"] = account
+                    account += debit
                     # accrue debit per two weeks
                     header_print += 1
+                    
+                new_row['Date'] = txdate
+                new_row['New'] = account   
+                new_row["Desc"] = row["Description"]
+                transactions.append(new_row)
 
+                # write new_row to file
+                json.dump(new_row, jsonfile)
+                jsonfile.write('\n')
+                
         # print(spacer+spacer_ext)
         print("Total Transactions Read Processed: {}".format(
             transaction_number))
