@@ -31,11 +31,18 @@ def verse():
     
     # retrieve the image using given url link
     for url in img_urls:
-        print('Retrieving: {} @ {}'.format(url, url.split('/')[-1]))
-        urlretrieve(url, url.split('/')[-1])
+        # split paths for folder and append file name to create
+        # the final destination path for downloaded image
+        file = [url.split('/')[-1]]
+        path = os.path.realpath(__file__).split('\\')[:-1]
+        final_path = "/".join(path + file)
+
+        print('Retrieving: {} @ {}'.format(url, final_path))
+        urlretrieve(url, final_path)
     
     exit('Finished')
 
 if __name__ == "__main__":
+    print(os.path.realpath(__file__))
     verse()
 
