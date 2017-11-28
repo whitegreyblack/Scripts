@@ -3,6 +3,7 @@
 # File    : function to parse website and scrape daily image
 # Author  : Sam Whang | WGB
 # License : MIT
+
 import os
 import sys
 import requests
