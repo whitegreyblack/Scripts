@@ -72,8 +72,8 @@ def main(argv):
     END = '\x1b[0m'
 
     # strings for printing
-    pcredit = "| {:4} | {:3} | {:7.2f} | "+GRN+"{:7.2f}"+END+" | {:7.2f} |"
-    pdebit =  "| {:4} | {:3} | {:7.2f} | "+RED+"{:7.2f}"+END+" | {:7.2f} |"
+    pcredit = "| {:4} | {:3} | {:7.2f} | " + GRN + "{:7.2f}" + END + " | {:7.2f} |"
+    pdebit =  "| {:4} | {:3} | {:7.2f} | " + RED + "{:7.2f}" + END + " | {:7.2f} |"
     header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
     spacer =  "+------+----------+---------+---------+---------+"
     final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
