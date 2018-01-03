@@ -1,6 +1,7 @@
 #!/bin/env python
 
-# File    : function to parse website and scrape daily image
+# File    : verses.py
+# Desc    : parses website to retrieve daily hosted image
 # Author  : Sam Whang | WGB
 # License : MIT
 
