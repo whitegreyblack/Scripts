@@ -10,12 +10,15 @@ filename = sys.argv[1]
 img = Image.open(filename)
 data = img.tobytes()
 img.close()
+
 r = data[0::3]
 g = data[1::3]
 b = data[2::3]
+
 w,h = img.size
 bri = min(w,h)
 direction = min(w,h)
+
 if len(sys.argv) == 4:
 
     if 'b' in sys.argv[2]:
@@ -33,25 +36,29 @@ if len(sys.argv) == 3:
 im1 = Image.new('RGB',(w,h))
 im2 = Image.new('RGB',(w,h))
 im3 = Image.new('RGB',(w,h))
+
 draw1 = ImageDraw.Draw(im1)
 draw2 = ImageDraw.Draw(im2)
 draw3 = ImageDraw.Draw(im3)
 
 def chunk(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
+    return [l[i:i + n] for i in range(0, len(l), n)]
 
 def average(ll):
     digs = []
     for j in ll:
-        digs.append((sum([i[0] for i in j])//bri,sum([i[1] for i in j])//bri, sum([i[2] for i in j])//bri))
+        digs.append(
+            (sum([i[0] for i in j]) // bri, 
+             sum([i[1] for i in j]) // bri, 
+             sum([i[2] for i in j]) // bri))
     return digs
 
 def rgbHSL(x):
-	r,g,b=x[0]/255,x[1]/255,x[2]/255
+	r,g,b=x[0] / 255, x[1] / 255, x[2] / 255
 	maxa,mini = max([r,g,b]),min([r,g,b])
-	h = s = l = (maxa+mini)/2
+	h = s = l = (maxa + mini) / 2
 
-	if maxa == mini or maxa-mini == 0 or maxa+mini==2:
+	if maxa == mini or maxa - mini == 0 or maxa + mini==2:
 		h = s = 0
 	else:
 		d = maxa-mini

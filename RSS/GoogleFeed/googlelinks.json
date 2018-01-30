@@ -3,14 +3,14 @@
 	{
 		"schema" : "https://news.google.com/news/rss/headlines/section/topic/{}",
 		"links": [
-			{ "sub" : "WORLD" },
+			{ "sub" : "WORLD" },  
 			{ "sub" : "NATION" },
 			{ "sub" : "BUSINESS" },
 			{ "sub" : "TECHNOLOGY" },
 			{ "sub" : "ENTERTAINMENT" },
 			{ "sub" : "SPORTS" },
-		    	{ "sub" : "SCIENCE" },
-		    	{ "sub" : "HEALTH" }
+			{ "sub" : "SCIENCE" },
+			{ "sub" : "HEALTH" }
 		]
 	}
 }
