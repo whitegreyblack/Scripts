@@ -11,7 +11,11 @@ import requests
 import sys
 import os
 
-def parser(soup, tag, cls):
+text = []
+
+def parser(link, tag, cls=None):
+    html = requests.get(link)
+    soup = BeautifulSoup(html.text, 'html.parser')
     for title in soup.find_all(tag, {'class': cls} if cls else {}):
         try:
             text.append(title.get_text())
@@ -19,45 +23,48 @@ def parser(soup, tag, cls):
             raise
 
 def vc_listing():
-    '''Retrieves movie list from valley-city section'''
-    text.append('--- Valley City Listings ---')
+    '''Retrieves movie list from valley-city section Finds all headers with
+    tag "h4" and class id "heading14" to find all valley city listed movies
+    '''
     link = "http://bison6cinema.com/valley-city/"
-    html = requests.get(link)
-    soup = BeautifulSoup(html.text, 'html.parser')
-    parser(soup, 'h4', 'heading14')
+    text.append('--- Valley City Listings ---')
+    parser(link, 'h4', 'heading14')
 
 def jt_listing():
-    '''Retrieves movie list from jamestown section'''
-    text.append('--- Jamestown Listings  ---')
+    '''Retrieves movie list from jamestown section. Finds all headers with 
+    tag "h4" and class id "heading18" to find all jamestown listed movies.
+    '''
     link = "http://bison6cinema.com"
-    html = requests.get(link)
-    soup = BeautifulSoup(html.text, 'html.parser')
-    parser(soup, 'h4', 'heading18')
+    text.append('--- Jamestown Listings  ---')
+    parser(link, 'h4', 'heading18')
 
 def upcoming():
-    '''Retrieves upcoming movie lsit from jamestown section'''
-    text.append('---   Upcoming Movies   ---')
+    '''Retrieves upcoming movie lsit from jamestown section. Upcoming is a 
+    little different from VC and JT functions since they are not surrounded
+    by spans like the upcoming movies.
+    '''
     link = "http://bison6cinema.com"
     html = requests.get(link)
     soup = BeautifulSoup(html.text, 'html.parser')
+
+    text.append('---   Upcoming Movies   ---')
     for title in soup.find_all('span'):
         if not title.attrs:
             for string in title.stripped_strings:
                 text.append(string)
 
-text = []
-
-# dictionary used during args parsing to specify individual functions
-listings = {
-    'vc': vc_listing,
-    'jt': jt_listing,
-    'up': upcoming,
-}
-
 def movies():
     '''Main driver that calls vc, jt, and upcoming functions
     Input arguments specified are parsed here for running commands
     '''
+    # dictionary used during args parsing to specify individual functions
+    listings = {
+        'vc': vc_listing,
+        'jt': jt_listing,
+        'up': upcoming,
+    }
+
+    # check if args not specified
     if len(sys.argv) == 1:
         for link in listings.values():
             link()
@@ -68,6 +75,7 @@ def movies():
         except KeyError:
             print('Parameter input not recognized', sys.argv[1])
 
+    # combine text array into multi line string and print
     if text:
         print("\n".join(text))
 

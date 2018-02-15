@@ -37,8 +37,10 @@ def verse():
         file = [url.split('/')[-1]]
         path = os.path.realpath(__file__).split('\\')[:-1]
         final_path = "/".join(path + file)
+
         path_exists = os.path.exists(final_path)
         path_not_file = not path_exists and not os.path.isfile(final_path)
+        
         if not path_exists and path_exists:
             print(f'Retrieving: {url} @ {final_path}')
             urlretrieve(url, final_path)
