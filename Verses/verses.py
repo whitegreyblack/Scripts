@@ -28,7 +28,7 @@ def verse():
         except KeyError:
             pass
     
-    print(f'\033[1AImage Links Founds: {len(img_urls)}')
+    print(f'Image Links Founds: {len(img_urls)}')
     
     # retrieve the image using given url link
     for url in img_urls:
@@ -38,7 +38,7 @@ def verse():
         path = os.path.realpath(__file__).split('\\')[:-1]
         final_path = "/".join(path + file)
         if not os.path.exists(final_path) or (os.path.exists(final_path) and not os.path.isfile(final_path)):
-            print(f'\033[1ARetrieving: {url} @ {final_path}')
+            print(f'Retrieving: {url} @ {final_path}')
             urlretrieve(url, final_path)
     
     exit('\033[1AFinished')
