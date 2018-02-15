@@ -41,7 +41,7 @@ def verse():
             print(f'Retrieving: {url} @ {final_path}')
             urlretrieve(url, final_path)
     
-    exit('\033[1AFinished')
+    exit('Finished')
 
 if __name__ == "__main__":
     print(os.path.realpath(__file__))
