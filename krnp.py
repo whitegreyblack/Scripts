@@ -9,16 +9,7 @@ License : MIT
 import sys
 import re
 
-COMMA = ','
-PERIOD = '.'
-class ValueType:
-    SMALLINT = "SMALL INT"
-    LARGEINT = "LARGE INT"
-    DECIMAL = "FLOAT"
-    CURRENCY = "MONEY"
-    DATE = "DATE"
-
-SMALLINT, LARGEINT, DECIMAL, CURRENCY, DATE = range(5)
+numerical = r"^(?:\$){0,1}(?:\d{0,3})(?:(?:\.\d{3})*|(?:\,\d{3})*|(?:\d)*)(?:\.\d{2}){0,1}$"
 
 def parser(args):
     '''Takes in a number of different inputs relating to numbers and tries to
@@ -53,39 +44,14 @@ def parser(args):
             return is_number(value)
         return False
 
-    value, vtype = None, None
-    # maybe large number
-    if COMMA in args:
-        value = args.split(',')
-        vtype = ValueType.LARGEINT
-        print(value)
-
-    if PERIOD in args:
-        # maybe decimal, maybe EU style number
-        if args.count(PERIOD) == 1:
-            # try decimal
-            value = args.split(',')
-            vtype = ValueType.DECIMAL
-        else:
-            value = args.split(',')
-            vtype = ValueType.LARGEINT
-
-    print('V', value, vtype)
-
-    args = args.replace(',', '')
     print(args)
-
-    number = is_number(args)
-    if number:
-        print(number)
-    else:
-        currency = is_currency(args)
-        if currency:
-            print(currency)
-
-    # if args.startswith('$'):
-    #     print('money')
-    # elif args.
+    
+    if re.match(numerical, args):
+        if args.startswith('$'):
+            print('mon')
+        else:
+            print('num')
+    # elif re.match(dateformat, args):
 
 
 if __name__ == "__main__":
