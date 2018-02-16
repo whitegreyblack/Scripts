@@ -12,6 +12,10 @@ import sys
 import os
 
 def verse():
+    '''Retrieves a verse img reference path to download image to local 
+    directory. Checks for duplicates in the directory so multiple calls
+    to this function will not download image again
+    '''
     img_urls = set()
     link = "https://www.bible.com/verse-of-the-day"
     
