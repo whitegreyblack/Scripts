@@ -9,7 +9,10 @@ License : MIT
 import sys
 import re
 
+# these regex specifiers are combined 
+# -- we could split them up and have a huge if-else chain
 numerical = r"^(?:\$){0,1}(?:\d{0,3})(?:(?:\.\d{3})*|(?:\,\d{3})*|(?:\d)*)(?:\.\d{2}){0,1}$"
+num_dates = r"(?:(?:\d{0,2}\/){1,2}|(?:\d{0,2}\-){1,2})(?:\d{4}|\d{2})"
 
 def parser(args):
     '''Takes in a number of different inputs relating to numbers and tries to
@@ -28,6 +31,11 @@ def parser(args):
 
         Once number parsing has been completed. Detecting currency should not 
         be too hard. We find if the value starts with a Dollar or Won symbol.
+
+        If any of the numbers pass either the number or currency regex match
+        then we save the input type and strip the number of any special chars.
+        We only want to work with the number inputs. We can format after we 
+        finish working on the numbers.
     '''
 
     def is_number(arg):
@@ -51,6 +59,10 @@ def parser(args):
             print('mon')
         else:
             print('num')
+    elif re.match(num_dates, args):
+        print('date')
+    else:
+        print('Invalid input')
     # elif re.match(dateformat, args):
 
 
