@@ -40,9 +40,9 @@ days_in_week = {
 
 # these regex specifiers are combined 
 # -- we could split them up and have a huge if-else chain
-numerical = r"^(?:\$){0,1}(?:\d{0,3})(?:(?:\.\d{3})*|(?:\,\d{3})*|(?:\d)*)(?:\.\d{2}){0,1}$"
-num_dates = r"(?:(?:\d{0,2}\/){1,2}|(?:\d{0,2}\-){1,2})(?:\d{4}|\d{2})"
-daysregex = r"^({})$".format('|'.join(days_in_week))
+num_regex = r"^(?:\$){0,1}(?:\d{0,3})(?:(?:\.\d{3})*|(?:\,\d{3})*|(?:\d)*)(?:\.\d{2}){0,1}$"
+dateregex = r"(?:(?:\d{0,2}\/){1,2}|(?:\d{0,2}\-){1,2})(?:\d{4}|\d{2})"
+day_regex = r"^({})$".format('|'.join(days_in_week))
 space = " "
 
 def convert(number, i, placement):
@@ -96,16 +96,16 @@ if __name__ == "__main__":
             if not 0 <= int(val) <= 2:
                 raise ValueError("2nd parameter is incorrect. Must be between 0-2")
 
-        if bool(re.match(numerical, args)):
+        if bool(re.match(num_regex, args)):
             if args.startswith('$'):
                 args.replace('$', '')
             for string in get_strings(args, int(val)):
                 print(string)
 
-        elif bool(re.match(num_dates, args)):
+        elif bool(re.match(dateregex, args)):
             print('date')
 
-        elif bool(re.match(daysregex, args)):
+        elif bool(re.match(day_regex, args)):
             print('day')
             
         else:
