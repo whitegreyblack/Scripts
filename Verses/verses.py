@@ -44,8 +44,7 @@ def verse():
 
         path_exists = os.path.exists(final_path)
         path_not_file = not path_exists and not os.path.isfile(final_path)
-        
-        if not path_exists and path_exists:
+        if path_not_file:
             print(f'Retrieving: {url} @ {final_path}')
             urlretrieve(url, final_path)
     
