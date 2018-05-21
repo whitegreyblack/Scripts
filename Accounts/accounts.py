@@ -18,32 +18,31 @@ import csv
 import sys
 
 # TODO:
-# Choose credit and/or debit
-# Single input/output file, uses respective file input name as both in/out files
-# Json is currently not writing new values to file -- fix soon
+# - Choose credit and/or debit
+# - Single input/output file, uses respective file input name as both in/out files
+# - Json is currently not writing new values to file -- fix soon
+# - Input as debit card transactions (DC) or credit card transactions (CC)
+#   Will allow for two types of transaction csv lists BOH vs AMEX
 
 def main(argv):
     '''transforms csv transaction data into json for formatted printing'''
 
+    # -- START FUNCTION VARIABLES --
     usage = """
     accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
         -s, -e : date formats [MM/DD/YYYY], [MM-DD-YYYY] 
         -d, -c : print either debit or credit statements, not both
     """[1:]
 
-    fields = (
-        "Account",
-        "ChkRef",
-        "Debit",
-        "Credit",
-        "Balance",
-        "Date",
-        "Description"
-        )
+    fields = ("Account",
+              "ChkRef",
+              "Debit",
+              "Credit",
+              "Balance",
+              "Date",
+              "Description")
 
-    translation_table = {
-
-    }
+    translation_table = {}
 
     # Internal variables
     file_in = ""
@@ -84,7 +83,9 @@ def main(argv):
     p_monthly_avgs_high = "| {:35} |".format("Monthly Avg") + RED + " {:7.2f} " + END + "|"
     p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
     p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
+    # -- END FUNCTION VARIABLES --
 
+    # -- START FUNCTION LIST --
     def parse_date(ddate):
         """Error checking for input dates"""
         if "/" in ddate:
@@ -103,22 +104,16 @@ def main(argv):
             raise ValueError("Date contains invalid number of variables")
 
         # All errors have been safely checked -- now create a valid date object
-        ddate = date(
-            year = ddate[2], 
-            month = ddate[0],
-            day = ddate[1]
-        )
-
-        return ddate
+        return date(year = ddate[2], 
+                    month = ddate[0],
+                    day = ddate[1])
 
     def valid_date(ddate):
         """Date parsing used in final output date checking"""
         ddate = tuple(map(lambda x: int(x), ddate.split("/")))
-        ddate = date(
-            year = 2000 + ddate[2],
-            month = ddate[0],
-            day = ddate[1]
-        )
+        ddate = date(year = 2000 + ddate[2],
+                     month = ddate[0],
+                     day = ddate[1])
 
         return start <= ddate <= end
 
@@ -128,12 +123,10 @@ def main(argv):
             print(spacer)
             
             if income > 0.0:
-                print(p_months_in.format(
-                    transactions_in, income))
+                print(p_months_in.format(transactions_in, income))
 
             if usage > 0.0:
-                print(p_months_out.format(
-                    transactions_out, usage))
+                print(p_months_out.format(transactions_out, usage))
 
             net_total = income - usage
 
@@ -142,12 +135,11 @@ def main(argv):
             else:
                 print(p_monthly_loss.format(month, net_total))
 
-            print(spacer)
-            print()
-
+            print(spacer + "\n")
             monthly_average.append(net_total)
+    # -- END OF FUNCTIONS -- 
 
-    # args parsing
+    # -- START ARGS PARSING --
     try:
         opts, args = getopt.getopt(argv, "cdhve:i:o:s:", ["fin=", "fout="])
     except getopt.GetoptError:
@@ -222,8 +214,7 @@ def main(argv):
     # so read from latest to earliest history to fill empty cells and 
     # then print from earliest to latest using calculated data
     with open(file_in, 'r') as csvfile, open(file_out, 'w') as jsonfile:
-        account = None
-        header_check = False
+        account, header_check = None, False
 
         # loop through the csv line with given fields
         reader = csv.DictReader(csvfile, fields)
@@ -232,7 +223,6 @@ def main(argv):
         for row in reader:
             if not header_check:
                 header_check = True
-
             else:
                 # write the info to json file
                 # json.dump(row, jsonfile)
@@ -257,10 +247,9 @@ def main(argv):
                 # during print to terminal
                 tm, td, ty = tuple(map(lambda x: int(x), row['Date'].split('/')))
 
-                txdate = date(
-                            year = ty,
-                            month = tm,
-                            day = td).strftime(date_format)
+                txdate = date(year = ty,
+                              month = tm,
+                              day = td).strftime(date_format)
 
                 new_row = {}
 
@@ -316,7 +305,6 @@ def main(argv):
     # read the file in reverse now to find out monthly income and expenses
     # iterate through the rows and calculate monthly costs and averages
     for transact_num, row in enumerate(reversed(transactions)):
-        
         # check for valid dates and parse if true
         if valid_date(row['Date']): 
             month = parse_date(row['Date']).month
@@ -338,29 +326,25 @@ def main(argv):
                 transactions_in = 0
                 transactions_out = 0
 
-            # Dont include service fees that equals less than 1 dollar
+            # Dont include service fees that is less than 1 dollar
             if row['Amount'] < 1.00:
                 pass
-
             elif row['Type'].lower() == "credit":
                 monthly_income += row['Amount']
                 transactions_in += 1
-                print(pcredit.format(
-                    transact_num,
-                    row['Date'],
-                    row['Prev'],
-                    row['Amount'],
-                    row['New']))
-
+                print(pcredit.format(transact_num,
+                                     row['Date'],
+                                     row['Prev'],
+                                     row['Amount'],
+                                     row['New']))
             else:
                 monthly_usage += row['Amount']
                 transactions_out += 1
-                print(pdebit.format(
-                    transact_num,
-                    row["Date"],
-                    row['Prev'],
-                    row['Amount'],
-                    row['New']))
+                print(pdebit.format(transact_num,
+                                    row["Date"],
+                                    row['Prev'],
+                                    row['Amount'],
+                                    row['New']))
 
     monthly_stats(current_month, monthly_income, monthly_usage)
 
@@ -379,5 +363,6 @@ def main(argv):
     print(spacer)
     exit("Finished")
 
+# only call script if this script is the main script run
 if __name__ == "__main__":
     main(sys.argv[1:])
