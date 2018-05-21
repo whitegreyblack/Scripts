@@ -2,12 +2,11 @@
 '''
 Author: Sam Whang
 File  : accounts.py
-Usage : py accounts.py
-Info  : calculates debit and credit transactions using a csv file
-        and prints remainder in every transaction line printed
-Cmd   : python Accounts/accounts.py  -i Accounts/transact-17-10-30.csv -o Accounts/transact.json
+Usage : python Accounts/accounts.py -i ransact -o transact.json
+Info  : calculates debit and credit transactions to my bank account using 
+        a csv file and prints remainder in every transaction line printed
 '''
-
+from funcutils import parse_date, valid_date
 from collections import namedtuple
 from namedlist import namedlist
 from datetime import date
@@ -23,6 +22,7 @@ import sys
 # - Json is currently not writing new values to file -- fix soon
 # - Input as debit card transactions (DC) or credit card transactions (CC)
 #   Will allow for two types of transaction csv lists BOH vs AMEX
+# - Question: Should we parse outside of main?
 
 def main(argv):
     '''transforms csv transaction data into json for formatted printing'''
@@ -30,8 +30,9 @@ def main(argv):
     # -- START FUNCTION VARIABLES --
     usage = """
     accounts.py -s <start> -e <end> -i <infile> -o <outfile> -c/-d
-        -s, -e : date formats [MM/DD/YYYY], [MM-DD-YYYY] 
-        -d, -c : print either debit or credit statements, not both
+                -i, -o : input transaction csv file and/or json outfile
+                -s, -e : start/end date formats [MM/DD/YYYY], [MM-DD-YYYY] 
+                -d, -c : print either debit or credit statements, not both
     """[1:]
 
     fields = ("Account",
@@ -73,8 +74,8 @@ def main(argv):
     # strings for printing
     pcredit = "| {:4} | {:3} | {:7.2f} | " + GRN + "{:7.2f}" + END + " | {:7.2f} |"
     pdebit =  "| {:4} | {:3} | {:7.2f} | " + RED + "{:7.2f}" + END + " | {:7.2f} |"
-    header =  "| Num  |   Date   |  Prev   | Amount  |  New    |"
-    spacer =  "+------+----------+---------+---------+---------+"
+    header =  "| Num  |   Date   |  Prev   | Amount  |  New    | Desc     |"
+    spacer =  "+------+----------+---------+---------+---------+----------+"
     final =  "| {:35} |".format("Current Bank Balance") + " {:7.2f} |"
     p_months_in = "| {:32} ".format("Monthly Income") + "{:2} | {:7.2f} |"
     p_months_out = "| {:32} ".format("Monthly Expenses") + "{:2} | {:7.2f} |"
@@ -84,44 +85,13 @@ def main(argv):
     p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
     p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
     # -- END FUNCTION VARIABLES --
-
-    # -- START FUNCTION LIST --
-    def parse_date(ddate):
-        """Error checking for input dates"""
-        if "/" in ddate:
-            ddate = ddate.split("/")
-        elif "-" in ddate:
-            ddate = ddate.split("-")
-        else:
-            raise ValueError("Date contains invalid seperator")
-
-        try:
-            ddate = tuple(map(lambda x: int(x), ddate))
-        except ValueError:
-            raise ValueError("Date contains invalid variables types")
-
-        if len(ddate) != 3:
-            raise ValueError("Date contains invalid number of variables")
-
-        # All errors have been safely checked -- now create a valid date object
-        return date(year = ddate[2], 
-                    month = ddate[0],
-                    day = ddate[1])
-
-    def valid_date(ddate):
-        """Date parsing used in final output date checking"""
-        ddate = tuple(map(lambda x: int(x), ddate.split("/")))
-        ddate = date(year = 2000 + ddate[2],
-                     month = ddate[0],
-                     day = ddate[1])
-
-        return start <= ddate <= end
-
+    
+    # -- START INTERNAL FUNCTIONS --
     def monthly_stats(month, income, usage):
-        '''Terminal output print if income and usage exists'''
+    '''Terminal output print if income and usage exists'''
         if income > 0.0 or usage > 0.0:
             print(spacer)
-            
+
             if income > 0.0:
                 print(p_months_in.format(transactions_in, income))
 
@@ -137,8 +107,8 @@ def main(argv):
 
             print(spacer + "\n")
             monthly_average.append(net_total)
-    # -- END OF FUNCTIONS -- 
-
+    # -- END INTERNAL FUNCTIONS --
+    
     # -- START ARGS PARSING --
     try:
         opts, args = getopt.getopt(argv, "cdhve:i:o:s:", ["fin=", "fout="])
@@ -198,6 +168,11 @@ def main(argv):
         print("File Output: {}".format(file_out))
         print("Start Date : {}".format(start.strftime(date_format)))
         print("End Date   : {}".format(end.strftime(date_format)))
+
+        # pause to let user see verbose info before proceeding
+        # we could just wait 5 seconds but this allows users to 
+        # manually choose when to go to the next step
+        input()
 
     # We start at one to correct for the number of transactions 
     # placed on account offsetted by one to skip off-by-one errors
