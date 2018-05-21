@@ -1,31 +1,49 @@
+from collections import namedtuple
+import datetime
+
+# -- INTERNAL VARIABLES--
+date_format = "%m/%d/%y"
+date_model = namedtuple("DateModel", "year month date")
+
+INVALID_VARIABLE_NUMBER = """
+Date contains invalid number of variables (expected: 3, got {})
+"""[1:]
+
 # -- START FUNCTION LIST --
-def parse_date(ddate):
-    """Error checking for input dates"""
-    if "/" in ddate:
-        ddate = ddate.split("/")
-    elif "-" in ddate:
-        ddate = ddate.split("-")
+def parse_date(date: str) -> datetime.date:
+    """Error checking for user input dates"""
+    # checks seperator - only want slashes or dashes
+    if "/" in date:
+        date = date.split("/")
+    elif "-" in date:
+        date = date.split("-")
     else:
         raise ValueError("Date contains invalid seperator")
 
+    # checks date variables between seperators
     try:
-        ddate = tuple(map(lambda x: int(x), ddate))
-    except ValueError:
-        raise ValueError("Date contains invalid variables types")
+        date = tuple(map(lambda x: int(x), date))
+    except ValueError as exception:
+        exit("Date contains invalid variables types")
 
-    if len(ddate) != 3:
-        raise ValueError("Date contains invalid number of variables")
+    try:
+        month, day, year = date
+    except ValueError:
+        exit(INVALID_VARIABLE_NUMBER.format(len(date)))
 
     # All errors have been safely checked -- now create a valid date object
-    return date(year = ddate[2], 
-                month = ddate[0],
-                day = ddate[1])
+    return datetime.date(year=date[2], month=date[0], day=date[1])
 
-def valid_date(ddate):
-"""Date parsing used in final output date checking"""
-    ddate = tuple(map(lambda x: int(x), ddate.split("/")))
-    ddate = date(year = 2000 + ddate[2],
-                    month = ddate[0],
-                    day = ddate[1])
-    return start <= ddate <= end
-# -- END OF FUNCTIONS -- 
+def valid_date(date, seperator="/") -> bool:
+    """Date parsing used in csv date inputs"""
+    date = tuple(map(lambda x: int(x), date.split(seperator)))
+    date = datetime.date(year=2000 + date[2],
+                         month=date[0],
+                         day=date[1])
+    return start <= date <= end
+# -- END OF FUNCTIONS --
+
+if __name__ == "__main__":
+    print("Utils for date time manipulation in accounts.py and creditcard.py")
+    # print(parse_date("10/a/6/6"))
+    # print(parse_date("10/5/6/6"))

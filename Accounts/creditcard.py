@@ -8,6 +8,7 @@ Info  : calculates credit card transactions using a csv file
         Uses the same engine as accounts but since the csv's differ, had to
         move functionality to a new script
 '''
+from funcutils import parse_date, valid_date
 from collections import namedtuple
 from namedlist import namedlist
 from datetime import date

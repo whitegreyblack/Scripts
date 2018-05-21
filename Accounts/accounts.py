@@ -85,10 +85,10 @@ def main(argv):
     p_monthly_gain = "| {:32} ".format("Monthly Net :- Gain") + "{:2} |" + GRN + "{:8.2f}" + END + " |"
     p_monthly_loss = "| {:32} ".format("Monthly Net :- Loss") + "{:2} |" + RED + "{:8.2f}" + END + " |"
     # -- END FUNCTION VARIABLES --
-    
+
     # -- START INTERNAL FUNCTIONS --
     def monthly_stats(month, income, usage):
-    '''Terminal output print if income and usage exists'''
+        '''Terminal output print if income and usage exists'''
         if income > 0.0 or usage > 0.0:
             print(spacer)
 
@@ -159,7 +159,8 @@ def main(argv):
         raise ValueError("Input file has wrong extension type: need csv")
     
     if file_out == "":
-        raise ValueError("No output file has been specified")
+        # raise ValueError("No output file has been specified")
+        print("No output file specified -- no json will be saved")
     elif not file_out.endswith("json"):
         raise ValueError("Output file has wrong extension type: need json")
     
@@ -324,7 +325,7 @@ def main(argv):
     monthly_stats(current_month, monthly_income, monthly_usage)
 
     print(spacer)
-    print("| {:45} |".format("Statistics from selected months"))
+    print("| {:55} |".format("Statistics from selected months"))
     print(spacer)
 
     if monthly_average:
