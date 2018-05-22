@@ -129,6 +129,12 @@ def main(argv):
         # accrue debit per two weeks
         return account, row
 
+    def finish_transaction(date, account, new_row, row):
+        new_row['Date'] = transact_date.strftime("%m/%d/%y")
+        new_row['New'] = account   
+        new_row["Desc"] = row["Description"]
+        return new_row
+
     def transact_wrapper(transaction_func, transaction, account):
         try:
             return transaction_func(transaction, account)
@@ -220,15 +226,17 @@ def main(argv):
         if file_out:
             with open(file_out, 'w') as jsonfile:
                 account, header_check = None, False
-
                 # loop through the csv line with given fields
                 reader = csv.DictReader(csvfile, fields)
-
+                jsonfile.write("[\n\t")
                 # iterate through the csv file
                 for row in reader:
                     if not header_check:
                         header_check = True
                     else:
+                        if transaction_number > 1:
+                            json.dump("\n\t", jsonfile)
+                            
                         # string formatting and correcting for valid dates
                         # during print to terminal
                         month, day, year = tuple(map(lambda x: int(x), 
@@ -257,23 +265,82 @@ def main(argv):
                         # reading the transaction
                         credit, debit = row['Credit'], row['Debit']
                         if credit:                  
-                            account, new_row = transact_wrapper(credit_transaction,
-                                                                credit,
-                                                                account)
+                            account, new_row = \
+                                transact_wrapper(credit_transaction,
+                                                 credit,
+                                                 account)
                         else:
-                            account, new_row = transact_wrapper(debit_transaction,
-                                                                debit,
-                                                                account)
-                            
-                        new_row['Date'] = transact_date.strftime("%m/%d/%y")
-                        new_row['New'] = account   
-                        new_row["Desc"] = row["Description"]
+                            account, new_row = \
+                                transact_wrapper(debit_transaction,
+                                                 debit,
+                                                 account)
+
+                        new_row = finish_transaction(transact_date, 
+                                                     account, 
+                                                     new_row,
+                                                     row)
+
+                        # new_row['Date'] = transact_date.strftime("%m/%d/%y")
+                        # new_row['New'] = account   
+                        # new_row["Desc"] = row["Description"]
                         transactions.append(new_row)
 
                         # write new_row to file
                         json.dump(new_row, jsonfile)
-                        jsonfile.write('\n')
-                
+                json.file.write("\n]")
+
+        else:
+            account, header_check = None, False
+            # loop through the csv line with given fields
+            reader = csv.DictReader(csvfile, fields)
+            # iterate through the csv file
+            for row in reader:
+                if not header_check:
+                    header_check = True
+                else:
+                    # string formatting and correcting for valid dates
+                    # during print to terminal
+                    month, day, year = tuple(map(lambda x: int(x), 
+                                            row['Date'].split('/')))
+                    transact_date = date(year=year, month=month, day=day)
+                    # reading backwards so pass until we're in range
+                    # pass if outside of past end date
+                    if transact_date >= end:
+                        pass
+
+                    # stop if past start date
+                    if transact_date < start:
+                        break
+
+                    if not account:
+                        account = float(row['Balance'])
+                    transaction_number += 1
+
+                    # checks if balance exists
+                    balance = row['Balance']
+                    if balance == "":
+                        balance = account
+                    else:
+                        balance = float(balance)
+                        
+                    # reading the transaction
+                    credit, debit = row['Credit'], row['Debit']
+                    if credit:                  
+                        account, new_row = transact_wrapper(credit_transaction,
+                                                            credit,
+                                                            account)
+                    else:
+                        account, new_row = transact_wrapper(debit_transaction,
+                                                            debit,
+                                                            account)
+
+                    new_row = finish_transaction(transact_date,
+                                                    account, 
+                                                    new_row,
+                                                    row)
+
+                    transactions.append(new_row)
+
         # print(spacer+spacer_ext)
         print("Total Transactions Read and Processed: {}".format(
             transaction_number))
