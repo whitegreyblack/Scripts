@@ -51,7 +51,7 @@ def main(argv):
     debit = True
     credit = True
     verbose = False
-    date_format = "%m/%d/%y"
+    date_format = "%m/%d/%Y"
 
     # Start/End used in date checking when specific dates are 
     # entered through command line
@@ -107,6 +107,34 @@ def main(argv):
 
             print(spacer + "\n")
             monthly_average.append(net_total)
+
+    def credit_transaction(credit, account):
+        credit = float(credit)
+        row = {}
+        row['Type'] = "credit"
+        row['Amount'] = credit
+        row['Prev'] = balance - credit
+        row['Change'] = balance
+        account -= credit
+        return account, row
+
+    def debit_transaction(debit, account):
+        debit = float(debit)
+        row = {}
+        row['Type'] = "debit"
+        row["Amount"] = debit
+        row["Prev"] = balance + debit
+        row["Change"] = balance + debit
+        account += debit
+        # accrue debit per two weeks
+        return account, row
+
+    def transact_wrapper(transaction_func, transaction, account):
+        try:
+            return transaction_func(transaction, account)
+        except ValueError as err:
+            err.args = (transaction,)
+            raise
     # -- END INTERNAL FUNCTIONS --
     
     # -- START ARGS PARSING --
@@ -141,7 +169,6 @@ def main(argv):
     if start != date(2015, 10, 27):
         if verbose:
             print("Start date not entered -- using last entry in file as start")
-        
         start = parse_date(start)
 
     if end != date.today():
@@ -189,86 +216,66 @@ def main(argv):
     # the transaction history due to removal of data from history loss
     # so read from latest to earliest history to fill empty cells and 
     # then print from earliest to latest using calculated data
-    with open(file_in, 'r') as csvfile, open(file_out, 'w') as jsonfile:
-        account, header_check = None, False
+    with open(file_in, 'r') as csvfile:
+        if file_out:
+            with open(file_out, 'w') as jsonfile:
+                account, header_check = None, False
 
-        # loop through the csv line with given fields
-        reader = csv.DictReader(csvfile, fields)
+                # loop through the csv line with given fields
+                reader = csv.DictReader(csvfile, fields)
 
-        # iterate through the csv file
-        for row in reader:
-            if not header_check:
-                header_check = True
-            else:
-                # write the info to json file
-                # json.dump(row, jsonfile)
-                # jsonfile.write('\n')
+                # iterate through the csv file
+                for row in reader:
+                    if not header_check:
+                        header_check = True
+                    else:
+                        # string formatting and correcting for valid dates
+                        # during print to terminal
+                        month, day, year = tuple(map(lambda x: int(x), 
+                                               row['Date'].split('/')))
+                        transact_date = date(year=year, month=month, day=day)
+                        # reading backwards so pass until we're in range
+                        # pass if outside of past end date
+                        if transact_date >= end:
+                            pass
 
-                if not account:
-                    account = float(row['Balance'])
+                        # stop if past start date
+                        if transact_date < start:
+                            break
 
-                transaction_number += 1
+                        if not account:
+                            account = float(row['Balance'])
+                        transaction_number += 1
 
-                # checks if balance exists
-                balance = row['Balance']
-                if balance == "":
-                    balance = account
-                else:
-                    balance = float(balance)
+                        # checks if balance exists
+                        balance = row['Balance']
+                        if balance == "":
+                            balance = account
+                        else:
+                            balance = float(balance)
+                            
+                        # reading the transaction
+                        credit, debit = row['Credit'], row['Debit']
+                        if credit:                  
+                            account, new_row = transact_wrapper(credit_transaction,
+                                                                credit,
+                                                                account)
+                        else:
+                            account, new_row = transact_wrapper(debit_transaction,
+                                                                debit,
+                                                                account)
+                            
+                        new_row['Date'] = transact_date.strftime("%m/%d/%y")
+                        new_row['New'] = account   
+                        new_row["Desc"] = row["Description"]
+                        transactions.append(new_row)
 
-                credit = row['Credit']
-                debit = row['Debit']
-
-                # string formatting and correcting for valid dates 
-                # during print to terminal
-                tm, td, ty = tuple(map(lambda x: int(x), row['Date'].split('/')))
-
-                txdate = date(year = ty,
-                              month = tm,
-                              day = td).strftime(date_format)
-
-                new_row = {}
-
-                # reading a credit transaction
-                if credit is not "":
-                    credit = float(credit)
-                    # new_row = {}
-                    new_row['Type'] = "credit"
-                    new_row['Amount'] = credit
-                    new_row['Prev'] = balance - credit
-                    new_row['Change'] = balance
-                    # new_row['Date'] = txdate
-                    # new_row['New'] = account
-                    account -= credit
-                    # credit transactions means two weeks
-                    # so reset monthly calculations every
-                    # two weeks
-
-                # reading a debit transaction
-                elif debit is not "":
-                    debit = float(debit)
-                    # new_row = {}
-                    new_row['Type'] = "debit"
-                    new_row["Amount"] = debit
-                    new_row["Prev"] = balance + debit
-                    new_row["Change"] = balance + debit
-                    # new_row["Date"] = txdate
-                    # new_row["New"] = account
-                    account += debit
-                    # accrue debit per two weeks
-                    header_print += 1
-                    
-                new_row['Date'] = txdate
-                new_row['New'] = account   
-                new_row["Desc"] = row["Description"]
-                transactions.append(new_row)
-
-                # write new_row to file
-                json.dump(new_row, jsonfile)
-                jsonfile.write('\n')
+                        # write new_row to file
+                        json.dump(new_row, jsonfile)
+                        jsonfile.write('\n')
                 
         # print(spacer+spacer_ext)
-        print("Total Transactions Read Processed: {}".format(
+        print("Total Transactions Read and Processed: {}".format(
             transaction_number))
 
     # print header information
@@ -282,50 +289,50 @@ def main(argv):
     # iterate through the rows and calculate monthly costs and averages
     for transact_num, row in enumerate(reversed(transactions)):
         # check for valid dates and parse if true
-        if valid_date(row['Date']): 
-            month = parse_date(row['Date']).month
-            
-            if month != current_month:
-                # we can skip printing if we do not detect any changes in 
-                # balance during the month
-                monthly_stats(current_month, monthly_income, monthly_usage)
+        # if valid_date(row['Date']):
+        month = parse_date(row['Date']).month
+        
+        if month != current_month:
+            # we can skip printing if we do not detect any changes in 
+            # balance during the month
+            monthly_stats(current_month, monthly_income, monthly_usage)
 
-                if monthly_income > 0.0 or monthly_usage > 0.0:
-                    print(spacer)
-                    print(header)
-                    print(spacer)
+            if monthly_income > 0.0 or monthly_usage > 0.0:
+                print(spacer)
+                print(header)
+                print(spacer)
 
-                # reset monthly statistics
-                current_month = month
-                monthly_income = 0
-                monthly_usage = 0
-                transactions_in = 0
-                transactions_out = 0
+            # reset monthly statistics
+            current_month = month
+            monthly_income = 0
+            monthly_usage = 0
+            transactions_in = 0
+            transactions_out = 0
 
-            # Dont include service fees that is less than 1 dollar
-            if row['Amount'] < 1.00:
-                pass
-            elif row['Type'].lower() == "credit":
-                monthly_income += row['Amount']
-                transactions_in += 1
-                print(pcredit.format(transact_num,
-                                     row['Date'],
-                                     row['Prev'],
-                                     row['Amount'],
-                                     row['New']))
-            else:
-                monthly_usage += row['Amount']
-                transactions_out += 1
-                print(pdebit.format(transact_num,
-                                    row["Date"],
+        # Dont include service fees that is less than 1 dollar
+        if row['Amount'] < 1.00:
+            pass
+        elif row['Type'].lower() == "credit":
+            monthly_income += row['Amount']
+            transactions_in += 1
+            print(pcredit.format(transact_num,
+                                    row['Date'],
                                     row['Prev'],
                                     row['Amount'],
                                     row['New']))
+        else:
+            monthly_usage += row['Amount']
+            transactions_out += 1
+            print(pdebit.format(transact_num,
+                                row["Date"],
+                                row['Prev'],
+                                row['Amount'],
+                                row['New']))
 
     monthly_stats(current_month, monthly_income, monthly_usage)
 
     print(spacer)
-    print("| {:55} |".format("Statistics from selected months"))
+    print("| {:56} |".format("Statistics from selected months"))
     print(spacer)
 
     if monthly_average:
