@@ -11,26 +11,33 @@ import requests
 import sys
 import os
 
+debug = True
+
 def verse():
     '''Retrieves a verse img reference path to download image to local 
     directory. Checks for duplicates in the directory so multiple calls
-    to this function will not download image again
+    to this function will not download duplicate image links again
     '''
     img_urls = set()
+    url_main = 'https://www.bible.com/'
     link = "https://www.bible.com/verse-of-the-day"
-    
+    html_tag = 'a'
+
     # retrieve the html from link
     html = requests.get(link)
     # parse the html into a valid tree object
     soup = BeautifulSoup(html.text, 'html.parser')
     
     # get all meta tag objects with image contents
-    for img in soup.find_all('meta'):
+    for img in soup.find_all(html_tag):
         try:
             if img['content'].endswith('jpg'):
                 img_urls.add(img['content'])
         except KeyError:
             pass
+    if debug:
+        for img_url in img_urls:
+            print(img_url)
     
     print(f'Image Links Founds: {len(img_urls)}')
     
