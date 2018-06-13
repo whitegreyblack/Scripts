@@ -1,0 +1,688 @@
+[
+    {
+        "question": "What permissions are needed to import leads and contacts to a Campaign?",
+        "qtype": "single_choice",
+        "answer": "Marketing user checkbox & profile",
+        "choices": [
+            "Marketing User permission set",
+            "Marketing user profile",
+            "Marketing user checkbox on user",
+            "Marketing user checkbox & profile"
+        ]
+    },
+    {
+        "question": "If the Org Wide Default is Public Read/Write, what feature in Salesforce is needed to restrict access to that object?",
+        "qtype": "single_choice",
+        "answer": "Profile",
+        "choices": [
+            "Role Hierarchy",
+            "Page Layout",
+            "Profile",
+            "Record Type"
+        ]
+    },
+    {
+        "question": "What are the ways leads can be captured with Salesforce? (Choose two answers)",
+        "qtype": "multi_choice",
+        "answer": [
+            "Web to Lead",
+            "Lead Import"
+        ],
+        "choices": [
+            "Lead Import",
+            "Lead Assignment",
+            "Web to Lead",
+            "Email to Lead"
+        ]
+    },
+	{ 
+        "question": "Which of the following fields CANNOT be a controlling field for Dependent Picklists?",
+        "qtype": "single_choice",
+        "answer": "Custom Multi-Select Picklist",
+        "choices": [
+            "Custom Multi-Select Picklist",
+            "Standard Picklist",
+            "Standard Checkbox",
+            "Custom Picklist",
+            "Custom Checkbox"
+        ]
+    },
+    {
+        "question": "The Sales Director wants to be alerted to deals that are greater than $1,000,000. Which tools can you use to achieve this?",
+        "qtype": "multi_choice",
+        "answer" : [
+            "Big Deal Alerts",
+            "Workflow - Create a workflow to send an email if an Opportunity amount is great than 1,000,000"
+        ],
+        "choices": [
+            "Create a report and monitor it daily",
+            "Workflow - Create a workflow to send an email if an Opportunity amount is great than 1,000,000",
+            "Ask the Sales Director to create a list view which shows Opportunities greater than 1,000,000",
+            "Big Deal Alerts"
+        ]
+    },
+    {
+        "question": "Can you uninstall an App Exchange application once it has been deployed?",
+        "qtype": "single_choice",
+        "answer": "Yes",
+        "choices": [
+            "No",
+            "Yes"
+        ]
+    },
+	{
+        "question": "A users security token will be refreshed every time their password is changed.",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "False",
+            "True"
+        ]
+    },
+    {          
+        "question": "What is a Bucket Field?",
+        "qtype": "single_choice",
+        "answer": "Used in reports to categorise and group report values",
+        "choices": [
+            "Used in reports to categorise and group report values",
+            "Used to group multiple workflows",
+            "A custom field that can be created to group values",
+            "A custom field that can be created to store a finite amount of values"
+        ]
+    },
+    {
+        "question": "A tab is automatically created when you create a custom object.",
+        "qtype": "true_false",
+        "answer": "False",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+	{
+        "question": "Standard picklist fields cannot be dependent fields",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "False",
+            "True"
+        ]
+    },
+	{
+        "question": "Which of the following are standard Salesforce Objects?",
+        "qtype": "multi_choice",
+        "answer": [
+            "Pricebook",
+            "Contract",
+            "Opportunity Product"
+        ],
+        "choices": [
+            "Opportunity Product",
+            "Pricebook",
+            "Ticket",
+            "Contract"
+        ]
+    },
+	{
+        "question": "A user can save a record even if a data validation error message appears.",
+        "qtype": "true_false",
+        "answer": "False",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+    {
+        "question": "Which of these objects can you map a field to on lead conversion?",
+        "qtype": "multi_choice",
+        "answer": [
+            "Contacts",
+            "Account",
+            "Opportunity"
+        ],
+        "choices": [
+            "Account",
+            "Contacts",
+            "Cases",
+            "Opportunities"
+        ]
+    },
+    {
+        "question": "Is it possible for a user to own a record and not see it?",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+	{
+        "question": "A customer service manager would like to automatically assign cases to the most appropriate agent to handle the request. What feature could be used?",
+        "qtype": "single_choice",
+        "answer": "Case Assignment Rules",
+        "choices": [
+            "Case Assignment Rules",
+            "Case Escalation Rules",
+            "Email to Case",
+            "Web to Case"
+        ]
+    },
+	{
+        "question": "What can an email template contain?",
+        "qtype": "multi_choice",
+        "answer": [
+            "Attached File",
+            "Text",
+            "Merge Field"
+        ],
+        "choices": [
+            "Macro",
+            "Text",
+            "Attached File",
+            "Merge Field"
+        ]
+    },
+	{
+        "question": "Which profiles listed are a standard Profile? Select all that apply",
+        "qtype": "multi_choice",
+        "answer": [
+            "Marketing User",
+            "Standard User",
+            "Contract Manager"
+        ],
+        "choices": [
+            "Contract Manager",
+            "Standard User",
+            "Marketing User",
+            "Invoice Manager"
+        ]
+    },
+	{
+        "question": "When a lead is converted, it becomes an Account, Contact, and Opportunity (unless you opt out of creating an opportunity)",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+    {
+        "question": "What are the different types of Sharing Rules?",
+        "qtype": "multi_choice",
+        "answer": [
+            "Case Sharing Rules",
+            "Lead Sharing Rules",
+            "Custom Object Sharing Rules",
+            "Account Sharing Rules"
+        ],
+        "choices": [
+            "Case Sharing Rules",
+            "Lead Sharing Rules",
+            "Solution Sharing Rules",
+            "Account Sharing Rules",
+            "Custom Object Sharing Rules"
+        ]
+    },
+	{
+        "question": "What is conditional highlighting for reports?",
+        "qtype": "single_choice",
+        "answer": "Shows you visual highlights depending on a threshold",
+        "choices": [
+            "You can set conditions that when met, will report the calculated fields",
+            "Lets you make calculations on custom fields",
+            "Shows you visual highlights depending on a threshhold",
+            "Users can highlight particularly interesting parts of a report"
+        ]
+    },
+    {
+        "question": "Which of these is not a Salesforce feature?",
+        "qtype": "single_choice",
+        "answer": "Email to Lead",
+        "choices": [
+            "Email to Lead",
+            "Web to Lead",
+            "Web to Case",
+            "Email to Case"
+        ]
+    },
+    {
+        "question": "Where can you make a field required? (Select all that apply)",
+        "qtype": "multi_choice",
+        "answer": [
+            "Page Layouts",
+            "Validation Rules",
+            "Field Edit Page"
+        ],
+        "choices": [
+            "Workflow Rule",
+            "Page Layouts",
+            "Validation Rules",
+            "Field Edit page",
+            "Record Type"
+        ]
+    },
+    {
+        "question": "What is a roll-up summary field?",
+        "qtype": "single_choice",
+        "answer": "A roll-up summary field is a custom field that aggregates child record information into the parent record",
+        "choices": [
+            "A roll-up summary field lets you rollback the data that was changed last week",
+            "The roll-up summary field gives you a summary of the data type and object relationship",
+            "A roll-up summary field is a custom field that aggregates child record information into the parent record",
+            "The roll-up summary field is accessible via the API"
+        ]
+    },
+    {
+        "question": "How do you delete a user?",
+        "qtype": "single_choice",
+        "answer": "You cannot delete a Salesforce User",
+        "choices": [
+            "Using an external application",
+            "Going to their profile and clicking the delete button",
+            "Deleting all information from their profile",
+            "You cannot delete a Salesforce User"
+        ]
+    },
+    {
+        "question": "When converting a Lead, what values are transferred to the Opportunity?",
+        "qtype": "multi_choice",
+        "answer": [
+            "Close Date = Today",
+            "Stage = First stage in list"
+        ],
+        "choices": [
+            "Close Date = Today",
+            "Amount = Lead Amount",
+            "Stage = First stage in list",
+            "Close Date = Last day in fiscal quarter"
+        ]
+    },
+    {
+        "question": "A Marketing manager would like to generate a list of contacts for a mailing list. What type of report would be the most appropriate to use:",
+        "qtype": "single_choice",
+        "answer": "Tabular",
+        "choices": [
+            "Summary",
+            "Matrix",
+            "Tabular",
+            "Mailing"
+        ]
+    },
+	{
+        "question": "Is it possible to share a custom object record manually?",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+    {
+        "question": "Which of these actions can be triggered from a Workflow?",
+        "qtype": "single_choice",
+        "answer": "Field Update, New Task, Email Sent, Outbound Message",
+        "choices": [
+            "Email Sent, Field U`pdate",
+            "Field Update, Email Sent, APEX Trigger, New Task",
+            "Field Update, New Task, Email Sent, Outbound Message",
+            "Create Object, New `Task, Email Sent,"
+        ]
+    },
+	{
+        "question": "Field Level Security or Page Layout can be used to make a field required ",
+        "qtype": "true_false",
+        "answer": "False",
+        "choices": [
+            "False",
+            "True"
+        ]
+    },
+	{
+        "question": "Data loss can occur when changing fields from the following types (choose all that are)",
+        "qtype": "multi_choice",
+        "answer": [
+            "Changing from a multi-select picklist to any other type",
+            "Changing from a checkbox to any other type of field",
+            "To a Number field from any other type of field"
+        ],
+        "choices": [
+            "Changing from a multi-select picklist to any other type",
+            "Changing from a checkbox to any other type of field",
+            "To a Number field from any other type of field",
+            "Changing from a Number field to a Text field"
+        ]
+    },
+    {          
+        "question": "What should a system administrator use to disable access to a custom application for a group of users?",
+        "qtype": "single_choice",
+        "answer": "Profiles",
+        "choices": [
+            "Profiles",
+            "Sharing Rules",
+            "Web Tabs",
+            "Page Layouts"
+        ]
+    },
+    {
+        "question": "Formulas ignore Field Level Security settings",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "False",
+            "True"
+        ]
+    },
+    {           
+        "question": "An Approval Process begins when a record is..",
+        "qtype": "single_choice",
+        "answer": "Submitted for Approval",
+        "choices": [
+            "Created",
+            "Edited",
+            "Saved",
+            "Submitted for Approval"
+        ]
+    },
+	{
+        "question": "A system administrator needs to restrict users ability to view a dashboard. How can this be accomplished?",
+        "qtype": "single_choice",
+        "answer": "Restrict the access to the folder that the dashboard is located",
+        "choices": [
+            "Restrict the access to the folder that the source report is located",
+            "Restrict the access to the folder that the dashboard is located",
+            "Create a sharing rule to restrict the access",
+            "Disable access to the dashboard on the users profile"
+        ]
+    },
+    {
+        "question": "How many objects may be imported or updated using the data loader in one operation?",
+        "qtype": "single_choice",
+        "answer": "1",
+        "choices": [
+            "10",
+            "Unlimited",
+            "1",
+            "5"
+        ]
+    },
+	{
+        "question": "What is the maximum number of Components available on a Dashboard?",
+        "qtype": "single_choice",
+        "answer": "20",
+        "choices": [
+            "10",
+            "20",
+            "50",
+            "5"
+        ]
+    },
+    { 
+        "question": "A user would like to generate a list of contacts for a mailing list. What type of report would be the most appropriate to use?",
+        "qtype": "single_choice",
+        "answer": "Tabular",
+        "choices": [
+            "Joined",
+            "Summary",
+            "Tabular",
+            "Matrix"
+        ]
+    },
+	{
+        "question": "In which scenarios will the sharing button appear?",
+        "qtype": "single_choice",
+        "answer": "When the sharing model for the object is private or public read only",
+        "choices": [
+            "It will always appear",
+            "When the sharing model for the object is public read/write",
+            "When the sharing model for the object is private",
+            "When the sharing model for the object is private or public read only"
+        ]
+    },
+	{
+        "question": "To track revenue gain or loss based on currency fluctuations, you must implement what feature?",
+        "qtype": "single_choice",
+        "answer": "Advanced Currency Management",
+        "choices": [
+            "Multi-Currency",
+            "Sandbox",
+            "Advanced Currency Management",
+            "Territory Management"
+        ]
+    },
+    {
+        "question": "Gauge and metric dashboard component types are based on what from a report?",
+        "qtype": "single_choice",
+        "answer": "Grand Total",
+        "choices": [
+            "Grand Total",
+            "Average",
+            "Chart",
+            "Sum"
+        ]
+    },
+    {
+        "question": "Workflow cannot be triggered upon import.",
+        "qtype": "true_false",
+        "answer": "False",
+        "choices": [
+            "False",
+            "True"
+        ]
+    },
+    {
+        "question": "Workflow can be triggered upon import.",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "False",
+            "True"
+        ]
+    },
+    {                
+        "question": "You can make fields visible, read-only, and required using Page Layouts.",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+    {
+        "question": "What is a Junction Object?",
+        "qtype": "single_choice",
+        "answer": "A Many-to-Many relationship created with two lookup master-detail relationship",
+        "choices": [
+            "A Many-to-Many relationship created with two lookup relationships",
+            "A Many-to-Many relationship created with two lookup master-detail relationship",
+            "A standard object",
+            "An object type to connect external web services"
+        ]
+    },
+    {
+        "question": "Why should you consider using the Import Wizard over the Data Loader?",
+        "qtype": "single_choice",
+        "answer": "If you require some De-Duplication",
+        "choices": [
+            "You need field auto-mapping functionality",
+            "If you require some De-Duplication",
+            "If you need to import more than 1,000,000 records",
+            "If you need to import to custom objects only"
+        ]
+    },
+	{
+        "question": "A user can still report on a field they have access to, if it is hidden from the page layout",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "False",
+            "True"
+        ]
+    },
+    {
+        "question": "What should a system administrator consider before importing a set of records into Salesforce?",
+        "qtype": "multi_choice",
+        "answer": [
+            "The import file should include a record owner for each record",
+            "Data should be de-duplicated in the import file prior to import"
+        ],
+        "choices": [
+            "Data should be de-duplicated in the import file prior to import",
+            "The import file should include a record owner for each record",
+            "Currency field values will default to the personal currency of the record owner",
+            "Validation rules are not triggered when importing data using the import wizard"
+        ]
+    },
+    {
+        "question": "A customer service manager would like to automatically assign cases to the most appropriate agent to handle the request. What feature could be used?",
+        "qtype": "single_choice",
+        "answer": "Case Assignment Rules",
+        "choices": [
+            "Email to Case",
+            "Case Escalation Rules",
+            "Case Assignment Rules",
+            "Web to Case"
+        ]
+    },
+	{
+        "question": "You can use standard reports when creating Dashboards?",
+        "qtype": "true_false",
+        "answer": "False",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+    {
+        "question": "What type of report cannot be used to populate a chart in a dashboard?",
+        "qtype": "single_choice",
+        "answer": "Tabular",
+        "choices": [
+            "Summary",
+            "Matrix",
+            "Tabular"
+        ]
+    },
+    {
+        "question": "When are Data validation Rules Enforced?",
+        "qtype": "single_choice",
+        "answer": "Upon saving a record",
+        "choices": [
+            "Upon editing a field",
+            "Upon opening a record",
+            "Upon closing the record",
+            "Upon saving a record"
+        ]
+    },
+	{
+        "question": "A Sales Manager would like to get a report of opportunities grouped by sales stage. What kind of report meet this requirement: ",
+        "qtype": "single_choice",
+        "answer": "Summary",
+        "choices": [
+            "Matrix",
+            "Tabular",
+            "Summary",
+            "All Salesforce Reports"
+        ]
+    },
+    {
+        "question": "A sales manager would like to view a dashboard from the perspective of different users and switch between users without editing the dashboard, how would an administrator enable this?",
+        "qtype": "multi_choice",
+        "answer": [
+            "Create the dashboard as a dynamic dashboard",
+            "Grant the sales manager the 'View my Teams Dashboard' permission"
+        ],
+        "choices": [
+            "Grant the sales manager the 'View my Teams Dashboard' permission",
+            "Grant the sales manager the 'Drag-and-Drop Dashboard builder' permission",
+            "Create the dashboard as a dynamic dashboard",
+            "Grant the sales manager the 'Manage Dynamic Dashboards' permission"
+        ]
+    },
+	{
+        "question": "You can restrict a profiles view to a certain field by using which feature?",
+        "qtype": "single_choice",
+        "answer": "Field Level Security",
+        "choices": [
+            "Profiles",
+            "Roles",
+            "Field Level Security",
+            "Permission Sets"
+        ]
+    },
+	{ 
+        "question": "All of the following objects may have a queue EXCEPT ",
+        "qtype": "single_choice",
+        "answer": "Accounts",
+        "choices": [
+            "Leads",
+            "Cases",
+            "Accounts",
+            "Custom Objects"
+       ]
+    },   
+	{
+        "question": "Fields which are hidden using Field-Level-Security are still subject to Validation Rules?",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+    {  
+        "question": "What is true about dynamic dashboards: ",
+        "qtype": "single_choice",
+        "answer": "A dynamic dashboard will show data according to the user's security settings",
+        "choices": [
+            "In dynamic dashboards, the source reports used can vary according to the user",
+            "A dynamic dashboard will show data according to the user's security settings",
+            "If a user wants to customise the dashboard, they should use a dynamic dashboard",
+            "A dynamic dashboard will refresh automatically several times a day"
+        ]
+    },
+    {           
+        "question": "A roll-up summary field requires a Master Detail relationship",
+        "qtype": "true_false",
+        "answer": "True",
+        "choices": [
+            "True",
+            "False"
+        ]
+    },
+    {
+        "question": "You want to give a profile access to a custom object. What would be the best way to do this?",
+        "qtype": "single_choice",
+        "answer": "Clone a standard profile and grant additional access",
+        "choices": [
+            "Create a permission set and assign it to relevant users",
+            "Clone a standard profile and grant additional access",
+            "Create a new profile and grant access",
+            "Edit a standard profile"
+        ]
+    },
+    {	 
+        "question": "Which statements about custom summary formulas in reports is true?",
+        "qtype": "multi_choice",
+        "answer": [
+            "Custom summary formulas can reference a formula field within a report",
+            "Custom summary formulas can be used in a report built from a custom report type"
+        ],
+        "choices": [
+            "Reports can be grouped by a custom summary formula result",
+            "Custom summary formulas can be used in a report built from a custom report type",
+            "Custom summary formulas can reference a formula field within a report",
+            "Custom summary formulas can reference another custom summary formula"
+        ]
+    },
+    {
+        "question": "Quotes & Opportunities are part of which cloud product?",
+        "qtype": "single_choice",
+        "answer": "Sales Cloud",
+        "choices": [
+            "Analytics Cloud",
+            "Sales Cloud",
+            "Marketing Cloud",
+            "Service Cloud"
+        ]
+    }
+]
