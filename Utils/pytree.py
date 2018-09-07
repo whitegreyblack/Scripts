@@ -1,16 +1,17 @@
-__author__  = "Sam WHang | WGB"
+#!/usr/bin/env python
+
+__author__  = "Samuel Whang"
 __email__   = "sangwoowhang@gmail.com"
-__license__ = "MIT"
 
 import os
 
 def list_files(startpath: str) -> None:
     '''
-    walks through directory with os.walk and lists directories 
+    Walks through directory with os.walk and lists directories 
     and files with given extensions
     '''
     # color code directories and specific extensions
-    # blue for directories  
+    # blue for directories
     folder='\x1b[0;34;40m'
     yellow='\x1b[0;33;40m'
     lightyellow = '\x1b[0;93;40m'
@@ -26,7 +27,7 @@ def list_files(startpath: str) -> None:
 
     skip_folders = ("__pycache__", "migrations", '.git')
     skip_extensions = (".swp",)
-    skip_but_print = (".ini")
+    skip_but_print = (".ini",)
     exts = {
         'html': blue,
         'css': cyan, 
@@ -50,17 +51,18 @@ def list_files(startpath: str) -> None:
 
         # print valid folders
         if os.path.basename(root) not in skip_folders:
-            print('{}{}{}/{}'.format('',indent, os.path.basename(root),end))
+            print(f'{indent}{os.path.basename(root)}/{end}')
             subindent = ' ' * 4 * (level + 1)
 
             # color codes file before print
             for f in files:
                 color = stop = ''
+
+                # probably a configuration/encoded file
                 if f.startswith('.'):
-                    # probably a configuration/encoded file
                     pass
 
-                # knwon extensions
+                # known extensions
                 elif f.endswith(tuple(exts.keys())):
                     try:
                         color = exts[f.split('.')[-1]]
@@ -71,7 +73,7 @@ def list_files(startpath: str) -> None:
                 # try reading the first line of file for shebangs
                 else:
                     try:
-                        with open(root+"\\"+f, 'r') as curr_file:
+                        with open(root+'\\'+f, 'r') as curr_file:
                             shebang = curr_file.readline().split(' ')[-1].strip()
 
                             if shebang in exts.keys():
@@ -84,7 +86,7 @@ def list_files(startpath: str) -> None:
                     # just print plain on error
                     except:
                         pass
-                print('{}{}{}{}'.format(color, subindent, f, stop))
+                print(f'{color}{subindent}{f}{stop}')
 
 if __name__ == "__main__":
     list_files(os.getcwd())
