@@ -25,7 +25,7 @@ def gitpush():
 def punchout():
     return "Logged out"
 
-options={
+options = {
     'test': test,
     'punchin': punchin,
     'hydrate': hydrate,
@@ -39,7 +39,7 @@ options={
 @click.command()
 @click.option('-e', help='Generated Event')
 def main(e):
-    slack = Slacker('xoxb-217367545728-QShRfL25wcFiyFZKXYRLA7ZN')
+    slack = Slacker('YOUR_SLACKER_BOT_API_KEY_HERE')
     if str(e) in options:
         slack.chat.post_message('#general', (options[e])())
 
