@@ -1,13 +1,12 @@
 #!/usr/bin/env python
+'''Color coded profiler function'''
 
 import platform
-'Color coded tree function written in python'
-
-__author__  = "Sam WHang | WGB"
-__email__   = "sangwoowhang@gmail.com"
-__license__ = "MIT"
-
 from typing import Sequence
+
+__author__  = "Sam Whang"
+__email__   = "sangwoowhang@gmail.com"
+
 
 # Print color formatting
 ORG = '\x1b[0;34;40m'
@@ -17,22 +16,22 @@ RED = '\x1b[1;31;40m'
 DIM = '\x1b[2;49;90m'
 END = '\x1b[0m'
 
-attributes=[
-        'architecture',
-        'linux_distribution',
-        'mac_ver',
-        'machine',
-        'node',
-        'platform',
-        'processor',
-        'python_build',
-        'python_compiler',
-        'python_version',
-        'release',
-        'system',
-        'version',
-        'uname',
-        ]
+attributes = [
+    'architecture',
+    'linux_distribution',
+    'mac_ver',
+    'machine',
+    'node',
+    'platform',
+    'processor',
+    'python_build',
+    'python_compiler',
+    'python_version',
+    'release',
+    'system',
+    'version',
+    'uname',
+]
 
 # helper functions for nested empty tuples
 def flatten(x: tuple) -> list:
@@ -57,9 +56,7 @@ def output() -> None:
             else:
                 details = empty(flatten(details))
 
-            print("{:20}: {:<}".format(
-                attr,
-                YEL+ details + END))
+            print("{:20}: {:<}".format(attr, YEL + details + END))
 
 if __name__ == "__main__":
     output()
