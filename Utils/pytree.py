@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+'''Simple color coded tree function'''
 
 __author__  = "Samuel Whang"
 __email__   = "sangwoowhang@gmail.com"
