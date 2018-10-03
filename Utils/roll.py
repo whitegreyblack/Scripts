@@ -18,7 +18,8 @@ direct = 'Type "exit" to exit'
 iinput = 'Invalid Input'
 dihelp = '[1-10]d[1-n][+-][1-n]'
 pusage = 'Usage: roll.py [-r DICE] | [-i] | [--help]'
-dregex = re.compile(r'^(\d*\s*)d(\s*\d+\s*)(\s*[+-]\s*\d+)?$')
+
+dice_str_regex = re.compile(r'^(\d*\s*)d(\s*\d+\s*)(\s*[+-]\s*\d+)?$')
 
 def match(pattern):
     ''' Checks the input pattern to parse the type of die to use'''
@@ -30,12 +31,22 @@ def match(pattern):
 @click.option('-i', is_flag=True, help='Continuous Input')
 def roll(r, i):
     ''' Main driver program '''
-    def out(p,prev=header): 
-        print('{}{}'.format(header, match(p)) if dregex.match(p) else ('{}{}\n{}{}'.format(prev,iinput,follow,dihelp)))
+    def out(p,prev=header):
+        if dice_str_regex.match(p):
+            message = f"{header}, {match(p)}"
+        else:
+            message = f"{prev},{iinput}\n{follow}{dihelp}"
+        print(message)
+        # print('{}{}'.format(header, match(p)) if dregex.match(p) else ('{}{}\n{}{}'.format(prev,iinput,follow,dihelp)))
     if r is None and not i:
         print(pusage)
     if i:
-        print('{}{}'.format(header, direct) if r is None else ('{}{}'.format(header, direct)))
+        if r is None:
+            message = f"{header}, {direct}"
+        else:
+            message = f"{header}, {direct}"
+        # print('{}{}'.format(header, direct) if r is None else ('{}{}'.format(header, direct)))    
+        print(message)
         if r:
             out(r, follow)
         while 1:
