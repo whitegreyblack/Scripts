@@ -1,0 +1,40 @@
+# (ANY) : Movie finder for nearest Bison movie theater (Valley City Location)
+
+# (SH)  : Shell Scripts for everyday tasks
+
+# (ANY) : News BOT
+
+# (ANY) : GMAIL Terminal CLI
+
+# (ANY) : Linter for Bash/Python/JS
+
+# (ANY) : TODO app using electron framework
+
+# (ANY) : Game project using GODOT
+
+# (ANY) : LRU/LFU Cache 
+
+# (DEB) : Img 2 Ascii converter
+
+# (ANY) : Ship Dungeon -- Ascii 
+
+# (ANY) : Real Time Output during input?
+
+# (ANY) : Grammar Interpreter (Real and Computer Langs)
+
+# (ANY) : Weather App to find weather using api's
+
+# (ANY) : Slack app in python to send notifications to chat windows
+
+# (DEB) : Shell Script for Stocks
+
+# (DEB) : Terminal Colors
+
+# (ANY) : Puzzles [ Sudoku, Nonograms, Crossword ]
+	: Sudoku CLI? Curses?
+
+# (ANY) : Calendar Simplified (Based on Git calendar)
+
+# (JS)  : Electron Based YAML Reciept Viewer
+ 
+# (MOB) : QR Reader/Writer to view/store Reciepts to cloud
