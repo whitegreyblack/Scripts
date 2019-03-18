@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 '''Resize tool for window command propmts'''
 
-__author__ = "Sam Whang"
-
-
 import os
 import platform
 import sys
@@ -12,12 +9,12 @@ import curses
 if __name__ == "__main__":
     y, x = 40, 100
     curses.use_env(True)
-    os.environ['LINES']="40"
-    os.environ['COLUMNS']="100"
+    os.environ['LINES'] = "40"
+    os.environ['COLUMNS'] = "100"
     
     if platform.system() == "Windows":
         # cmd prompt, powershell
-        os.system('mode con: cols={} lines={}'.format(x, y))
+        os.system(f'mode con: cols={x} lines={y}')
 
         os.system('mode con > out.txt')
         lines, cols = 0, 0

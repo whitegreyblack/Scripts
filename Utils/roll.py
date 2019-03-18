@@ -1,51 +1,66 @@
 #!/usr/bin/env python
-
 import re
 import click
-from datetime import datetime
-from random import seed
-from random import randint as rint
-__author__  = "Sam WHang | WGB"
+import random
+import datetime
+__author__  = "Sam Whang"
 __email__   = "sangwoowhang@gmail.com"
-__license__ = "MIT"
 
 # make sure pseudorandom number is based on non-reoccuring pattern
-seed(datetime.now())
+random.seed(datetime.datetime.now())
 
-header = 'roll: '
-follow = '....  '
-direct = 'Type "exit" to exit'
-iinput = 'Invalid Input'
-dihelp = '[1-10]d[1-n][+-][1-n]'
-pusage = 'Usage: roll.py [-r DICE] | [-i] | [--help]'
-dregex = re.compile(r'^(\d*\s*)d(\s*\d+\s*)(\s*[+-]\s*\d+)?$')
+header = "roll: "
+footer = "..... "
+direct = "Type 'exit' to exit"
+invalid_input = "Invalid Input"
+di_regex_helper = "[1-9]d[1-n][+-][1-n]"
+program_usage = "USAGE: roll.py [-r DICE STRING] | [-i] | [--help]"
 
-def match(pattern):
+dice_str_regex = re.compile(r'^(\d*\s*)d(\s*\d+\s*)(\s*[+-]\s*\d+)?$')
+
+def parse(pattern):
     ''' Checks the input pattern to parse the type of die to use'''
-    d, b = re.findall(r'[\d]+', pattern), re.findall(r'[\W]', pattern)
-    return sum([rint(1,int(d[1])) for _ in range(int(d[0]))])+(int(b[0]+d[2]) if len(d)>2 else 0)
+    dice = [int(x) for x in re.findall(r'[\d]+', pattern)]
+    bonus_sign = re.findall(r'[\W]', pattern)
+    di_only = sum([random.randint(1, dice[1]) for _ in range(dice[0])])
+    bonus = 0
+    if len(dice) > 2:
+        bonus = int(bonus_sign.pop() + str(dice[2]))
+
+    return di_only + bonus
+
+def output(p, prev=header):
+    if dice_str_regex.match(p):
+        message = f"{prev} {parse(p)}"
+    else:
+        message = f"{prev}{invalid_input}\n{footer}{di_regex_helper}"
+    print(message)
 
 @click.command()
-@click.option('-r', default=None, help=dihelp)
-@click.option('-i', is_flag=True, help='Continuous Input')
-def roll(r, i):
+@click.option('-r', 'roll', default=None, help=di_regex_helper)
+@click.option('-i', 'inputflag', is_flag=True, help='Continuous Input')
+def roll(roll, inputflag):
     ''' Main driver program '''
-    def out(p,prev=header): 
-        print('{}{}'.format(header, match(p)) if dregex.match(p) else ('{}{}\n{}{}'.format(prev,iinput,follow,dihelp)))
-    if r is None and not i:
-        print(pusage)
-    if i:
-        print('{}{}'.format(header, direct) if r is None else ('{}{}'.format(header, direct)))
-        if r:
-            out(r, follow)
+    # possibly only one roll
+    if not inputflag:
+        if roll:
+            output(roll)
+        else:
+            # no arguments given, print program usage string
+            print(program_usage)
+    # could be n + 1 rolls, check roll variable first
+    else:
+        if roll:
+            output(roll, footer)
         while 1:
-            r = input(header)
-            if r == 'exit': 
+            try:
+                rollin = input(header)
+            except KeyboardInterrupt:
+                print("Goodbye and happy rolling!")
                 break
-            out(r)
-    if r:
-        out(r)
+            if rollin == 'exit': 
+                break
+            output(rollin)
 
 if __name__ == "__main__":
-    # run only when called
     roll()

@@ -1,8 +1,7 @@
 import braille
 
-__author__  = "Sam WHang | WGB"
+__author__  = "Sam Whang"
 __email__   = "sangwoowhang@gmail.com"
-__license__ = "MIT"
 
 # unused -- testing different character sets to represent numbers
 lbracket = u'\u28CF'
